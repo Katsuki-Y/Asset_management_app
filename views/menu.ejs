@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MENU</title>
+    <link rel="stylesheet" href="css/menu.css">
+  </head>
+  <body>
+    <header>
+        <h1>資産管理ページ</h1>
+    </header>
+    <p><%=user%></p>
+    <button onclick="location.href='/login'">ログイン</button>
+    <button onclick="location.href='/insert'">新規作成</button>
+    <button onclick="location.href='/notice'">通知</button>
+    <button id="narrow_button">絞り込み</button>
+    <button id="change_button">変更</button>
+    <button id="request_button">申請</button>
+
+    <table border="1">
+      <tr>
+        <th>選択</th>
+        <th>番号</th>
+        <th>資産コード</th>
+        <th>資産名</th>
+        <th>所得年月日</th>
+        <th>型式</th>
+        <th>数量</th>
+        <th>値段</th>
+        <th>使用場所</th>
+        <th>ステータス</th>
+        <th>写真</th>
+        <th>帰りたい</th>
+      </tr>
+      <form method="post">
+      <% for(var i in content){ %>
+      <tr>
+        <td><label><input type="radio" name="radio" value="<%= content[i].id %>"></label></td>
+        <td><%=content[i].id %></td>
+        <td><%=content[i].code %></td>
+        <td><%=content[i].name %></td>
+        <td><%=content[i].date %></td>
+        <td><%=content[i].model %></td>
+        <td><%=content[i].quantity %></td>
+        <td><%=content[i].price %></td>
+        <td><%=content[i].place %></td>
+        <td><%=content[i].status %></td>
+        <td><%=content[i].picture %></td>
+        <td><img src="data:image/png;base64,<%= content[i].pict %>"></td>
+      </tr>
+      <% } %>
+    </table>
+    <dialog id="conf_dialog">
+        <h5 id="subtitle_content"></h5>
+        <input type="hidden" name="mode" id="hidden_content" value="">
+        <p id="conf_text"></p>
+        <input id="conf_button" type="submit" value="">
+      </form>
+      <button id="back_button">戻る</button>
+    </dialog>
+    
+    <footer>
+
+    </footer>
+
+    <dialog id="narrow_dialog">
+      <form method="post">
+      <h5>絞り込む内容を選択してくだい</h5>
+      <input type="hidden" name="mode" value="narrow_mode">
+      <table>
+        <tr>
+          <th>使用者で絞り込み</th>
+          <td>
+            <select name="narrow_user">
+              <option value="未設定">未設定</option>
+              <% for(var i in users){ %>
+              <option value="<%=users[i].name %>"><%=users[i].name %></option>
+              <% } %>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>取得年月日で絞り込み</th>
+          <td>
+            <input type="date" name="narrow_date_start" value="2020-01-01">から
+            <input type="date" name="narrow_date_end" id="today">まで
+          </td>
+        </tr>
+        <tr>
+          <th>使用場所(完全一致)</th>
+          <td>
+            <input type="text" name="narrow_place" value="未入力">
+          </td>
+        </tr>
+        <tr>
+          <th>ステータス</th>
+          <td>
+            <select name="narrow_status">
+              <option value="未設定" checked>未設定</option>
+              <option value="使用中">使用中</option>
+              <option value="未使用">未使用</option>
+              <option value="破損">破損</option>
+              <option value="廃棄">廃棄</option>
+              <option value="不明">不明</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <input type="submit" value="絞り込み">
+    </form>
+      <button id="narrow_back">戻る</button>
+  </dialog>
+
+    <script>
+      window.onload = function () {//今日の日付を取得する
+
+        var today = new Date();
+
+        today.setDate(today.getDate());
+
+        var yyyy = today.getFullYear();
+        var mm = ("0" + (today.getMonth() + 1)).slice(-2);
+        var dd = ("0" + today.getDate()).slice(-2);
+
+        document.getElementById("today").value = yyyy + '-' + mm + '-' + dd;
+      }
+
+      //絞り込みの処理
+      const narrow_dialog = document.getElementById("narrow_dialog");
+      const narrow_button = document.getElementById("narrow_button");
+      const narrow_back = document.getElementById("narrow_back");
+
+      narrow_button.addEventListener("click", function(event){//ボタンを押したらダイアログを出すようにする
+        narrow_dialog.showModal();
+      });
+      narrow_back.addEventListener("click", function(event){//戻るボタンで閉じれる
+        narrow_dialog.close();
+      });
+      
+      //変更の処理
+      const conf_dialog = document.getElementById("conf_dialog");
+      const change_button = document.getElementById("change_button");
+      const back_button = document.getElementById("back_button");
+      const radio_button = document.getElementsByName("radio");
+
+      change_button.addEventListener("click", function(event){//変更ボタンを押したら実行
+        var change_flag = false;
+        var change_id;
+
+        for (var i = 0; i < radio_button.length; i++) {//どのラジオボタンが押されているか確認
+         if (radio_button[i].checked) {
+          change_flag = true;
+          change_id = radio_button[i].value;
+         }
+        }
+        if(change_flag){//押されていればダイアログを出して、表示分を形成
+          document.getElementById("subtitle_content").textContent = "変更確認";
+          document.getElementById("hidden_content").value = "change_mode";
+          document.getElementById("conf_text").textContent = "id=" + change_id + "を変更します";
+          document.getElementById("conf_button").value = "変更"
+          conf_dialog.showModal();
+          
+        }
+        if(!change_flag){//押されていなければエラー
+          alert("変更エラー:何も選択されていません");
+        }
+      });
+      back_button.addEventListener("click", function(event){//戻るボタンで閉じる
+        conf_dialog.close();
+      });
+      
+      //申請の処理
+      const request_button = document.getElementById("request_button");
+      const request_back = document.getElementById("request_back");
+
+      request_button.addEventListener("click", function(event){//申請ボタンを押したら実行
+        var request_flag = false;
+        var request_id;
+
+        for (var i = 0; i < radio_button.length; i++) {//どのラジオボタンが押されているか確認
+         if (radio_button[i].checked) {
+          request_flag = true;
+          request_id = radio_button[i].value;
+         }
+        }
+        if(request_flag){//押されていればダイアログを出して
+          document.getElementById("subtitle_content").textContent = "申請確認";
+          document.getElementById("hidden_content").value = "request_mode";
+          document.getElementById("conf_text").textContent = "id=" + request_id + "を申請します";
+          document.getElementById("conf_button").value = "申請"
+          conf_dialog.showModal();
+        }
+        if(!request_flag){//押されていなければエラー
+          alert("申請エラー:何も選択されていません");
+        }
+      });
+      back_button.addEventListener("click", function(event){//戻るボタンで閉じる
+        conf_dialog.close();
+      });
+    </script>
+  </body>
+</html>

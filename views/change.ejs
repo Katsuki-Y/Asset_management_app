@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CHANGING</title>
+    <link rel="stylesheet" href="css/change.css">
+  </head>
+  <body>
+    <header>
+        <h1>変更ページ</h1>
+        <p><%=content[0].id %>を変更しています</p>
+    </header>
+    <form method="post">
+        <table>
+            <tr>
+                <th>資産コード</th>
+                <td><p><%=content[0].code%></p></td>
+            </tr>
+            <tr>
+                <th>資産名</th>
+                <td><p><%=content[0].name%></p></td>
+            </tr>
+            <tr>
+                <th>所得年月日</th>
+                <td><p><%=content[0].date%></p></td>
+            </tr>
+            <tr>
+                <th>型式</th>
+                <td><p><%=content[0].model%></p></td>
+            </tr>
+            <tr>
+                <th>数量</th>
+                <td><p><%=content[0].quantity%></p></td>
+            </tr>
+            <tr>
+                <th>値段</th>
+                <td><p><%=content[0].price%></p></td>
+            </tr>
+            <tr>
+                <th>使用場所</th>
+                <td><input type="text" name="place" value="<%=content[0].place%>"></td>
+            </tr>
+            <tr>
+                <th>ステータス</th>
+                <td><select name="status">   
+                    <option value="使用中">使用中</option>
+                    <option value="未使用">未使用</option>
+                    <option value="破損">破損</option>
+                    <option value="廃棄">廃棄</option>
+                    <option value="不明">不明</option>
+                </select></td>
+            </tr>
+            <tr>
+                <th>写真</th>
+                <td><input type="text" name="picture" value="未実装"></td>
+            </tr>
+            <tr>
+                <th></th>
+                <td><input type="submit" value="変更確定"></td>
+            </tr>
+        </table>
+        </form>
+    <footer>
+
+    </footer>
+  </body>
+</html>

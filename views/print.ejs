@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PRINT</title>
+    <link href="css/print.css" rel="stylesheet">
+</head>
+<body>
+    <h1>印刷ページ</h1>
+    <h2>書類印刷方法について</h2>
+    <p>Googleの場合:<br>
+        ①右上の︙を押して印刷を選択すると印刷画面が表示される<br>
+        ②ページをカスタムに変更し、「2」と入力(2ページ目が出力される)<br>
+        ③詳細設定をからオプションの「ヘッダーとフッター」のチャックを外す<br>
+        ④印刷をクリック<br>
+    </p>
+    <p>印刷が完了したら下の「完了」をクリックすると今回作成した、項目の通知が削除されます。<br></p>
+    <p>削除したくない場合、印刷しなくても良くなった場合は「戻る」をクリックすると通知欄に戻ることができます<br></p>
+
+    <form method="post">
+        <input type="submit" value="完了">
+    </form>
+    <button onclick="location.href='/notice'">戻る</button>
+
+    <div id="empty_space"></div>
+    <h1 id="document_title"><%= content[0].type %></h1>
+    <div id="document_body">
+        <div id="items">
+            <h3>資産コード:<%= content[0].code %></h3>
+            <h3>型番:<%= content[0].model %></h3>
+            <h3>使用者名:<%= content[0].user %></h3>
+            <h3>金額:<%= content[0].price %></h3>
+        </div>
+        <div id="reasons">
+            <h3 id="reason_exp">上記の資産を以下の理由で依頼します</h3>
+            <h2 id="reason_text"><%= content[0].reason %></h2>
+        </div>
+    </div>
+</body>
+</html>

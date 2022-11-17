@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>REQUEST</title>
+    <link rel="stylesheet" href="css/request.css">
+</head>
+<body>
+    <header>
+        <h1>申請ページ</h1>
+    </header>
+
+    <p>申請コード:<%= id%></p>
+
+    <form method="post">
+        <select name="request_type">
+            <option value="廃棄申請" selected>廃棄申請</option>
+            <option value="修理申請">修理申請</option>
+            <option value="シール再発行申請">シール再発行申請</option>
+        </select>
+        <br>
+        <textarea name="request_reason" cols="30" rows="5"></textarea>
+        <br>
+
+        <input type="submit" value="申請確定">
+    </form>
+    <button onclick="location.href='/'">戻る</button>
+</body>
+</html>

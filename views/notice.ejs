@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NOTICE</title>
+    <link rel="stylesheet" href="css/notice.css">
+</head>
+<body>
+    <header>
+        <h1>通知</h1>
+    </header>
+
+    <button id="print_button">書類作成</button>
+
+    <table border="1">
+        <tr>
+            <th>選択</th>
+            <th>id</th>
+            <th>資産コード</th>
+            <th>使用者名</th>
+            <th>申請種類</th>
+            <th>申請理由</th>
+        </tr>
+        <form method="post">
+        <% for(var i in content){ %>
+        <tr>
+            <td><label><input type="radio" name="radio" value="<%= content[i].id %>"></label></td>
+            <td><%= content[i].id %></td>
+            <td><%= content[i].code%></td>
+            <td><%= content[i].user%></td>
+            <td><%= content[i].type%></td>
+            <td><%= content[i].reason%></td>
+        </tr>
+        <% } %>
+    </table>
+    <dialog id="conf_dialog">
+        <h5 id="subtitle_content"></h5>
+        <p id="conf_text"></p>
+        <input type="submit" value="作成">
+      </form>
+      <button id="back_button">戻る</button>
+    </dialog>
+        </form>
+
+    <button onclick="location.href='/'">戻る</button>
+
+    <script>
+        const print_button = document.getElementById("print_button");
+        const radio_button = document.getElementsByName("radio");
+        const back_button = document.getElementById("back_button");
+        const conf_dialog = document.getElementById("conf_dialog");
+
+        print_button.addEventListener("click", function(event){
+            var print_flag = false;
+            var print_id;
+
+            for (var i = 0; i < radio_button.length; i++) {//どのラジオボタンが押されているか確認
+                if (radio_button[i].checked) {
+                    print_flag = true;
+                    print_id = radio_button[i].value;
+                }
+            }
+            if(print_flag){//押されていればダイアログを出して
+                document.getElementById("subtitle_content").textContent = "作成確認";
+                document.getElementById("conf_text").textContent = "id=" + print_id + "を作成します";
+                conf_dialog.showModal();
+            }
+            if(!print_flag){//押されていなければエラー
+                alert("作成エラー:何も選択されていません");
+            }
+        });
+
+        back_button.addEventListener("click", function(event){
+            conf_dialog.close();
+        });
+    </script>
+</body>
+</html>

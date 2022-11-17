@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>LOGIN</title>
+    <link rel="stylesheet" href="css/login.css">
+  </head>
+  <body>
+    <header>
+        <h1>ログインページ</h1>
+    </header>
+    <form method="post">
+        <div>
+            <p>ユーザー名を入力</p>
+            <input type="text" name = "login_name" id = "login" value = "" required>
+        </div>
+        <div>
+            <p>パスワード</p>
+            <input type="text" name = "password" id ="pass" value = "" required>
+        </div>
+        <input type="submit" value="ログイン" onclick="return word_check()">
+    </form>
+    <button onclick="location.href='/'">戻る</button>
+    <footer>
+
+    </footer>
+    <script>
+        function word_check(){
+            var admin_flag = false;
+            var user_flag = false;
+
+            if(login.value === "<%= user[0].name %>" && pass.value === "<%= user[0].password %>"){
+                admin_flag = true;
+            }
+            if(login.value === "<%= user[1].name %>" && pass.value === "<%= user[1].password %>"){
+                admin_flag = true;
+            }
+            if(admin_flag || user_flag){
+                return true;
+            }
+            alert("該当するアカウントが有りません");
+            return false;
+        }
+    </script>
+  </body>
+</html>

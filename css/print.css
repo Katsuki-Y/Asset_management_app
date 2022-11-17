@@ -1,0 +1,35 @@
+#empty_space{
+    padding-bottom: 680px;
+}
+
+#document_title{
+    text-align: center;
+}
+
+#document_body{
+    margin-top: 150px;
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+#document_title{
+    font-size: 50px;
+}
+
+#reasons{
+    margin-top: 70px;
+}
+
+#items{
+    font-size: 20px;
+}
+
+#reason_exp{
+    font-size: 20px;
+}
+
+#reason_text{
+    padding-bottom: 250px;
+    margin-top: 20px;
+    border: solid black;
+}

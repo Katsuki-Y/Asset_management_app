@@ -58,7 +58,7 @@ app.get('/', (req, res) => {//メニュー画面
     user:now_user
   }
 
-  connection.query('select * from test', (err, results, fields) =>{//登録されている資産を持ってくる
+  connection.query('select * from test where status != "廃棄"', (err, results, fields) =>{//登録されている資産を持ってくる
     if(err) throw err;
 
     all_data.content = results;//SQL文の結果を代入
@@ -101,8 +101,9 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
     }
     if(status !== "未設定"){
       narrow_text += "AND status = '" + status + "'";
+    }else{
+      narrow_text += "AND status != '廃棄'";
     }
-  
     connection.query(narrow_text, function(err, results, fields){//絞り込みを含んだsql文を実行
       if(err) throw err;
   
@@ -273,7 +274,28 @@ app.post("/print", (req, res)=>{//書類作成して通知として要らなく�
   res.redirect("/notice");
 });
 
-app.get("/login", (req,res)=>{//ログイン画面
+app.get("/inventory", (req, res)=>{
+  console.log(get_C + "/inventory");
+  var inventory_data={
+    content:""
+  }
+
+  connection.query("select * from test", (err, results, fields)=>{
+    inventory_data.content = results;
+
+    for(var i in inventory_data.content){//date型のままでは厄介なので文字列に変換
+      var year = inventory_data.content[i].date.getFullYear();
+      var month = inventory_data.content[i].date.getMonth() + 1;
+      var date = inventory_data.content[i].date.getDate();
+        
+      inventory_data.content[i].date = year + "年" + month + "月" + date + "日";
+    }
+
+    res.render("inventory.ejs", inventory_data);
+  });
+});
+
+app.get("/login", (req, res)=>{//ログイン画面
   console.log(get_C + "/login");
 
   connection.query("select * from users", function(err, results, fields){
@@ -281,6 +303,7 @@ app.get("/login", (req,res)=>{//ログイン画面
     var users_data={
       user:results
     };
+
     res.render("login.ejs", users_data);
   });
 });
@@ -288,17 +311,7 @@ app.get("/login", (req,res)=>{//ログイン画面
 app.post("/login", (req,res)=>{
   console.log(pos_C + "/login");
 
-  var login_name = req.body.login_name;
-
-  switch(login_name){
-
-    case "user1":
-      now_user = "user1";
-      break;
-
-    case "admin":
-      now_user = "admin";
-  }
+  now_user = req.body.login_name;
 
   res.redirect("/");
 });

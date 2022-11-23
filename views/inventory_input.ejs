@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>INVENTORY_INPUT</title>
+    <link rel="stylesheet" href="css/inventory_input.css">
+  </head>
+  <body>
+    <header>
+        <h1>棚卸し(入力)ページ</h1>
+    </header>
+
+    <p>csvファイルの入力はこちら</p>
+    <input type="file" id="csv_file" accept=".csv">
+    <button onclick="location.href='/'">戻る</button>
+
+    <table id="inbentory_table" border="1">
+        <thead>
+            <th>番号</th>
+            <th>資産コード</th>
+            <th>資産名</th>
+            <th>取得年月日</th>
+            <th>形式</th>
+            <th>数量</th>
+            <th>値段</th>
+            <th>使用場所</th>
+            <th>ステータス</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+    <script>
+      const fileInput = document.getElementById('csv_file');
+      const fileReader = new FileReader();
+
+      fileInput.onchange = () => {//ファイルが変わったときの処理
+        var file = fileInput.files[0];//ファイルの情報
+        fileReader.readAsText(file);//ファイルをfile APIで読み込む
+      };
+
+      fileReader.onload = () => {//ファイルが読み込まれてるときの処理
+        var fileResult = fileReader.result.split('\n');//改行コードごとに配列に代入、大きさは列の数
+        var header = fileResult[0].split(',');//ヘッダーを記録しておく
+        fileResult.shift();//csvファイルのヘッダー部分を消す
+
+        var items=[];
+        items = fileResult.map(item => {//配列の中身をそれぞれ回すforみたいなの
+          var datas = item.split(',');//カンマごとに分けて配列に代入
+          var result = {};
+
+          for (const index in datas) {//datasの要素数分回す
+            let category = header[index];//ヘッダー情報をオブジェクトのキーにする　
+
+            switch(category){//キーが日本語になってしまうのでcaseで英語に
+                case "番号":category = "id";
+                break;
+
+                case "資産コード":category = "code";
+                break;
+
+                case "資産名":category = "name";
+                break;
+
+                case "取得年月日":category = "date";
+                break;
+
+                case "形式":category = "model";
+                break;
+
+                case "数量":category = "quantity";
+                break;
+
+                case "値段":category = "price";
+                break;
+
+                case "使用場所":category = "place";
+                break;
+
+                case "ステータス":category = "status";
+                break;
+            }
+            result[category] = datas[index];
+          }
+
+          return result;//一応関数なので戻り値
+        });
+        console.log(items);
+        
+        var update_tbody = "";
+        for (item of items) {
+          tbody_html += `<tr>
+          <td>${item.id}</td>
+          <td>${item.title}</td>
+          <td>${item.url}</td>
+          <td>${item.category}</td>
+          <td>${item.create_date}</td>
+          </tr>
+          `
+  }
+      }
+    </script>
+ </body>
+</html>

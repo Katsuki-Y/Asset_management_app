@@ -274,8 +274,8 @@ app.post("/print", (req, res)=>{//書類作成して通知として要らなく�
   res.redirect("/notice");
 });
 
-app.get("/inventory", (req, res)=>{
-  console.log(get_C + "/inventory");
+app.get("/inventory_output", (req, res)=>{
+  console.log(get_C + "/inventory_output");
   var inventory_data={
     content:""
   }
@@ -291,9 +291,22 @@ app.get("/inventory", (req, res)=>{
       inventory_data.content[i].date = year + "年" + month + "月" + date + "日";
     }
 
-    res.render("inventory.ejs", inventory_data);
+    res.render("inventory_output.ejs", inventory_data);
   });
 });
+
+app.get("/inventory_input", (req, res)=>{
+  console.log(get_C + "inventory_input");
+
+  res.render("inventory_input.ejs");
+});
+
+app.post("/inventory_input", (req, res)=>{
+  console.log(pos_C + "inventory_input");
+
+  
+});
+
 
 app.get("/login", (req, res)=>{//ログイン画面
   console.log(get_C + "/login");

@@ -2,16 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>INVENTORY</title>
-    <link rel="stylesheet" href="css/inventory.css">
+    <title>INVENTORY_OUTPUT</title>
+    <link rel="stylesheet" href="css/inventory_output.css">
   </head>
   <body>
     <header>
-        <h1>棚卸しページ</h1>
+        <h1>棚卸し(出力)ページ</h1>
     </header>
     <a id="download">棚卸しファイルを取得</a>
-
-    <h3>↓棚卸しを実行するデータ↓</h3>
+    <button onclick="location.href='/'">戻る</button>
+    <h3>↓棚卸し実行で出力されるデータ↓</h3>
 
     <table id="inventory_data" border="1">
       <tr>
@@ -45,8 +45,6 @@
     const csv = [];
     const row = [];
 
-    const inventory_button = document.getElementById("inventory_button");
-
     for (let i = 0; i < table.rows.length; i++) {
         row.length=0//csv配列に代入した後はリセット
         for (let j = 0; j < table.rows[i].cells.length; j++) {
@@ -55,15 +53,14 @@
         }
         csv.push(row.join(','))//1つ1つの要素の間にカンマを入れてcsv配列に代入
     }
-    const result = csv.join("\n");
-    console.log(result);
+    const result = csv.join("\n");//間に改行コードを入れる
 
-    const blob = new Blob([result], {'type': 'text/csv'});
+    const blob = new Blob([result], {'type': 'text/csv'});//csvファイルに変換
 
     const a = document.getElementById("download");
     a.download = "result.csv";
     a.href = window.URL.createObjectURL(blob);
-    
+
     </script>
  </body>
 </html>

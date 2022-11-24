@@ -53,11 +53,11 @@
         }
         csv.push(row.join(','))//1つ1つの要素の間にカンマを入れてcsv配列に代入
     }
-    const result = csv.join("\n");//間に改行コードを入れる
+    const result = csv.join("\r\n");//間に改行コードを入れる
 
     const blob = new Blob([result], {'type': 'text/csv'});//csvファイルに変換
 
-    const a = document.getElementById("download");
+    const a = document.getElementById("download");//aタグクリックでダウンロードできるように
     a.download = "result.csv";
     a.href = window.URL.createObjectURL(blob);
 

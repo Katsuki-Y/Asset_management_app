@@ -300,11 +300,19 @@ app.get("/inventory_input", (req, res)=>{
 
   res.render("inventory_input.ejs");
 });
-
+//inbentory_inputからのpostはない
 app.post("/inventory_input", (req, res)=>{
   console.log(pos_C + "inventory_input");
-
   
+  for(var i = 0; i < req.body.id.length; i++){//棚卸しの列分forを回す
+    var id = req.body.id[i];
+    var place = req.body.place[i];
+    var status = req.body.status[i];
+
+    connection.query("update test set place = ?, status = ? where id = ?", [place, status, id], function(err, results, fields){
+    });
+  }
+  res.redirect("/");
 });
 
 

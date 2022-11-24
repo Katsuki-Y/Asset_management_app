@@ -14,27 +14,31 @@
     <input type="file" id="csv_file" accept=".csv">
     <button onclick="location.href='/'">戻る</button>
 
-    <table id="inbentory_table" border="1">
-        <thead>
-            <th>番号</th>
-            <th>資産コード</th>
-            <th>資産名</th>
-            <th>取得年月日</th>
-            <th>形式</th>
-            <th>数量</th>
-            <th>値段</th>
-            <th>使用場所</th>
-            <th>ステータス</th>
-        </thead>
-        <tbody>
-
-        </tbody>
-    </table>
+    <form method="post">
+        <table id="inbentory_table" border="1">
+            <thead>
+                <th>番号</th>
+                <th>資産コード</th>
+                <th>資産名</th>
+                <th>取得年月日</th>
+                <th>形式</th>
+                <th>数量</th>
+                <th>値段</th>
+                <th>使用場所</th>
+                <th>ステータス</th>
+            </thead>
+            <tbody id="inventory_table_tbody"></tbody>
+        </table>
+            <div id="submit_button"></div>
+    </form>
 
 
     <script>
       const fileInput = document.getElementById('csv_file');
       const fileReader = new FileReader();
+      const table = document.getElementById("inventory_table");
+      const tbody = document.getElementById("inventory_table_tbody");
+      const submit = document.getElementById("submit_button");
 
       fileInput.onchange = () => {//ファイルが変わったときの処理
         var file = fileInput.files[0];//ファイルの情報
@@ -42,9 +46,10 @@
       };
 
       fileReader.onload = () => {//ファイルが読み込まれてるときの処理
-        var fileResult = fileReader.result.split('\n');//改行コードごとに配列に代入、大きさは列の数
+        var fileResult = fileReader.result.split('\r\n');//改行コードごとに配列に代入、大きさは列の数
         var header = fileResult[0].split(',');//ヘッダーを記録しておく
         fileResult.shift();//csvファイルのヘッダー部分を消す
+        console.log(fileResult);
 
         var items=[];
         items = fileResult.map(item => {//配列の中身をそれぞれ回すforみたいなの
@@ -64,10 +69,10 @@
                 case "資産名":category = "name";
                 break;
 
-                case "取得年月日":category = "date";
+                case "所得年月日":category = "date";
                 break;
 
-                case "形式":category = "model";
+                case "型式":category = "model";
                 break;
 
                 case "数量":category = "quantity";
@@ -87,19 +92,34 @@
 
           return result;//一応関数なので戻り値
         });
-        console.log(items);
+        
         
         var update_tbody = "";
-        for (item of items) {
-          tbody_html += `<tr>
-          <td>${item.id}</td>
-          <td>${item.title}</td>
-          <td>${item.url}</td>
-          <td>${item.category}</td>
-          <td>${item.create_date}</td>
+        for (item of items) {//csvで読み込んだ分、htmlを追加
+          update_tbody += `<tr>
+          <td>
+            ${item.id}
+            <input type="hidden" name="id" value="${item.id}">
+          </td>
+          <td>${item.code}</td>
+          <td>${item.name}</td>
+          <td>${item.date}</td>
+          <td>${item.model}</td>
+          <td>${item.quantity}</td>
+          <td>${item.price} </td>
+          <td>
+            ${item.place}
+            <input type="hidden" name="place" value="${item.place}">
+          </td>
+          <td>
+            ${item.status}
+            <input type="hidden" name="status" value="${item.status}">
+          </td>
           </tr>
           `
-  }
+        }
+        tbody.innerHTML = update_tbody;
+        submit.innerHTML = '<input type="submit" value="反映">'//ボタンも追加
       }
     </script>
  </body>

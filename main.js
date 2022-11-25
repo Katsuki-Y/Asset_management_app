@@ -96,7 +96,7 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
     if(user_info !== "未設定"){
       narrow_text += "AND user = '"+ user_info + "' ";
     }
-    if(place !== "未入力"){
+    if(place !== ""){
       narrow_text += "AND place LIKE '%" + place + "%' ";
     }
     if(status !== "未設定"){
@@ -226,7 +226,7 @@ app.get("/notice", (req, res) =>{
   };
   //通知の画面ではデータベースから情報を持ってきて、何の申請が来ているのか確認できる
   //申請が処理されたかを判断するため、processedという0-処理済み,1-未処理のカラムを使っている
-  connection.query("select * from requests where processed = 1", (err, results, firlds) =>{
+  connection.query("select * from requests", (err, results, firlds) =>{
     notice_data.content = results;
 
     res.render("notice.ejs", notice_data);

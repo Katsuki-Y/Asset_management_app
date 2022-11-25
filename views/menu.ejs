@@ -11,8 +11,10 @@
     </header>
     <p><%=user%></p>
     <button onclick="location.href='/login'">ログイン</button>
+    <br>
     <button onclick="location.href='/insert'">新規作成</button>
     <button onclick="location.href='/notice'">通知</button>
+    <br>
     <button onclick="location.href='/inventory_output'">棚卸し(出力)</button>
     <button onclick="location.href='/inventory_input'">棚卸し(入力)</button>
     <button id="narrow_button">絞り込み</button>
@@ -91,7 +93,7 @@
         <tr>
           <th>使用場所(完全一致)</th>
           <td>
-            <input type="text" name="narrow_place" value="未入力">
+            <input type="text" name="narrow_place" value="">
           </td>
         </tr>
         <tr>

@@ -226,7 +226,7 @@ app.get("/notice", (req, res) =>{
   };
   //通知の画面ではデータベースから情報を持ってきて、何の申請が来ているのか確認できる
   //申請が処理されたかを判断するため、processedという0-処理済み,1-未処理のカラムを使っている
-  connection.query("select * from requests", (err, results, firlds) =>{
+  connection.query("select * from requests where processed = 1", (err, results, firlds) =>{
     notice_data.content = results;
 
     res.render("notice.ejs", notice_data);
@@ -235,9 +235,42 @@ app.get("/notice", (req, res) =>{
 
 app.post("/notice", (req, res) =>{
   console.log(pos_C + "/notice");
-  print_id = req.body.radio;//書類作成をする資産のid
 
-  res.redirect("/print");
+  if(req.body.mode === "print_mode"){
+    print_id = req.body.radio;//書類作成をする資産のid
+
+    res.redirect("/print");
+  }
+  
+  if(req.body.mode === "narrow_mode"){
+
+    if(req.body.narrow_status === "未設定" && req.body.processed !== "on"){//ゴリ押し
+      res.redirect("/notice");
+    }else{
+      narrow_text = "select * from requests where "
+      if(req.body.narrow_status !== "未設定" && req.body.processed === "on"){
+        narrow_text += "type = '"+ req.body.narrow_status + "' ";
+      }
+      if(req.body.narrow_status !== "未設定" && req.body.processed !== "on"){
+        narrow_text += "type = '"+ req.body.narrow_status + "' AND processed = 1";
+      }
+      if(req.body.narrow_status === "未設定" && req.body.processed === "on"){
+        narrow_text += "1"
+      }
+      
+      var narrow_data={
+        content:""
+      };
+
+      connection.query(narrow_text, function(err, results, fields){//絞り込みを含んだsql文を実行
+        if(err) throw err;
+  
+        narrow_data.content = results;
+
+        res.render("notice.ejs", narrow_data);
+      })    
+    } 
+  }
 });
 
 app.get("/print", (req,res) =>{

@@ -38,11 +38,11 @@
             </tr>
             <tr>
                 <th>使用場所</th>
-                <td><input type="text" name="place" value="<%=content[0].place%>"></td>
+                <td><input type="text" name="place" value="<%=content[0].place%>" maxlength="500"></td>
             </tr>
             <tr>
                 <th>ステータス</th>
-                <td><select name="status">   
+                <td><select id="status_pulldown" name="status">
                     <option value="使用中">使用中</option>
                     <option value="未使用">未使用</option>
                     <option value="破損">破損</option>
@@ -56,12 +56,22 @@
             </tr>
             <tr>
                 <th></th>
-                <td><input type="submit" value="変更確定"></td>
+                <td>
+                    <input type="submit" value="変更確定">
+                    <button onclick="location.href='/'" type="button">戻る</button>
+                </td>
             </tr>
         </table>
         </form>
-    <footer>
-
-    </footer>
+    <script>
+        const pulldown = document.getElementById("status_pulldown");
+        const text = pulldown.innerText.split("\n");
+        
+        for(i in text){
+            if(text[i] === "<%= content[0].status %>"){//プルダウンの値を変更前と同じ値に
+                pulldown.selectedIndex = i;
+            }
+        }
+    </script>
   </body>
 </html>

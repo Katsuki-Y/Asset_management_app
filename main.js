@@ -40,9 +40,9 @@ const connection = mysql.createConnection({//mysqlに接続するために使う
 
   var users_data;//登録されているユーザーの情報
 
-  var request_id;//申請される備品のid  / → /request
+  var request_code;//申請される備品のcode  / → /request
 
-  var print_id;//書類作成する備品のid /notice → /print
+  var print_id;//書類作成する備品のid idでないと申請がかぶるため /notice → /print
 
   connection.query('select * from users', (err, results, fields) =>{//登録されているユーザーを持ってくる
     if(err) throw err;
@@ -122,9 +122,9 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
   }
 
   if(req.body.mode === "change_mode"){//変更するとき
-    var change_data_id = req.body.radio;//変更する資産のidを記録
+    var change_data_code = req.body.radio;//変更する資産のcodeを記録
 
-    connection.query('select * from test where id = ?',change_data_id, (err, results, fields) =>{//idから変更するデータの情報のみ持ってくる
+    connection.query('select * from test where code = ?',change_data_code, (err, results, fields) =>{//codeから変更するデータの情報のみ持ってくる
       if(err) throw err;
       
       change_data.content = results;//情報を保存してURL変更
@@ -133,19 +133,26 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
   }
 
   if(req.body.mode === "request_mode"){//申請するとき
-    request_id = req.body.radio;//申請する資産のidだけ保存、SQL文は先で実行する
+    request_code = req.body.radio;//申請する資産のcodeだけ保存、SQL文は先で実行する
     res.redirect("/request");
   }
 });
 
 app.get('/insert', (req, res) => {//新規作成
   console.log(get_C + "/insert");
-  res.render('insert.ejs');
+  data={
+    users:users_data,
+    maxid:""
+  };
+  connection.query("select MAX(id) from test", (err, results, fields) =>{
+    data.maxid = results[0]["MAX(id)"];//idの最大値を取得、資産コード形成に必要
+    res.render('insert.ejs', data);
+  })
 });
 
 app.post('/insert', (req, res) =>{//新規作成から送られてきた情報をspl文で追加
   console.log(pos_C + "/insert");
-    var asset_data={
+    var insert_data={
         "code":req.body.code,
         "name":req.body.name,
         "date":req.body.date,
@@ -155,10 +162,11 @@ app.post('/insert', (req, res) =>{//新規作成から送られてきた情報�
         "place":req.body.place,
         "status":req.body.status,
         "picture":req.body.picture,
-        "user":"user1"
+        "user":req.body.user
     };
+    console.log(insert_data);
     
-    connection.query("insert into test set ?", asset_data, function (error, results, fields) {//追加する
+    connection.query("insert into test set ?", insert_data, function (error, results, fields) {//追加する
     });
     res.redirect('/');
 });
@@ -182,7 +190,7 @@ app.post("/change", (req, res)=>{
 
   var change_place = req.body.place;//変更するデータ
   var change_status = req.body.status;
-  connection.query("update test set place = ?, status = ? where id = ?", [change_place, change_status, change_data.content[0].id], function (err, results, fields){
+  connection.query("update test set place = ?, status = ? where code = ?", [change_place, change_status, change_data.content[0].code], function (err, results, fields){
   })
 
   res.redirect("/");
@@ -192,7 +200,7 @@ app.get('/request', (req, res) =>{
   console.log(get_C + "/request");
   
   request_data={//申請するデータ
-    id:request_id
+    code:request_code
   };
   res.render("request.ejs", request_data);
 });
@@ -202,7 +210,7 @@ app.post("/request", (req, res) =>{
 
   var temp_data = {};//テンプ用オブジェクト
   //申請する資産の情報を別のデータベースに保存
-  connection.query("select * from test where id = ?", request_id, function(err, results, fields){
+  connection.query("select * from test where code = ?", request_code, function(err, results, fields){
     temp_data.code = results[0].code;
     temp_data.model = results[0].model;
     temp_data.price = results[0].price;
@@ -237,7 +245,7 @@ app.post("/notice", (req, res) =>{
   console.log(pos_C + "/notice");
 
   if(req.body.mode === "print_mode"){
-    print_id = req.body.radio;//書類作成をする資産のid
+    print_id = req.body.radio;//書類作成をする資産のcode
 
     res.redirect("/print");
   }
@@ -279,7 +287,7 @@ app.get("/print", (req,res) =>{
   var print_data={
     content:""
   };
-  //書類作成するデータのidで検索してデータベースから情報を持ってくる
+  //書類作成するデータのcodeで検索してデータベースから情報を持ってくる
   connection.query("select * from requests where id = ?", print_id, function(err, results, fields){
     print_data.content = results;
 
@@ -337,12 +345,12 @@ app.get("/inventory_input", (req, res)=>{
 app.post("/inventory_input", (req, res)=>{
   console.log(pos_C + "inventory_input");
   
-  for(var i = 0; i < req.body.id.length; i++){//棚卸しの列分forを回す
-    var id = req.body.id[i];
+  for(var i = 0; i < req.body.code.length; i++){//棚卸しの列分forを回す
+    var code = req.body.code[i];
     var place = req.body.place[i];
     var status = req.body.status[i];
 
-    connection.query("update test set place = ?, status = ? where id = ?", [place, status, id], function(err, results, fields){
+    connection.query("update test set place = ?, status = ? where code = ?", [place, status, code], function(err, results, fields){
     });
   }
   res.redirect("/");

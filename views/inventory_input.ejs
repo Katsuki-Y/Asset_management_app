@@ -17,7 +17,6 @@
     <form method="post">
         <table id="inbentory_table" border="1">
             <thead>
-                <th>番号</th>
                 <th>資産コード</th>
                 <th>資産名</th>
                 <th>取得年月日</th>
@@ -49,7 +48,6 @@
         var fileResult = fileReader.result.split('\r\n');//改行コードごとに配列に代入、大きさは列の数
         var header = fileResult[0].split(',');//ヘッダーを記録しておく
         fileResult.shift();//csvファイルのヘッダー部分を消す
-        console.log(fileResult);
 
         var items=[];
         items = fileResult.map(item => {//配列の中身をそれぞれ回すforみたいなの
@@ -60,9 +58,6 @@
             let category = header[index];//ヘッダー情報をオブジェクトのキーにする　
 
             switch(category){//キーが日本語になってしまうのでcaseで英語に
-                case "番号":category = "id";
-                break;
-
                 case "資産コード":category = "code";
                 break;
 
@@ -98,10 +93,9 @@
         for (item of items) {//csvで読み込んだ分、htmlを追加
           update_tbody += `<tr>
           <td>
-            ${item.id}
-            <input type="hidden" name="id" value="${item.id}">
+            ${item.code}
+            <input type="hidden" name="code" value="${item.code}">
           </td>
-          <td>${item.code}</td>
           <td>${item.name}</td>
           <td>${item.date}</td>
           <td>${item.model}</td>

@@ -18,13 +18,14 @@
     <button onclick="location.href='/inventory_output'">棚卸し(出力)</button>
     <button onclick="location.href='/inventory_input'">棚卸し(入力)</button>
     <button id="narrow_button">絞り込み</button>
-    <button id="change_button">変更</button>
-    <button id="request_button">申請</button>
+    <form method="post">
+    <button id="change_button" type="button">変更</button>
+    <button id="request_button" type="button">申請</button>
+    <input type="hidden" id="hidden_content" name="mode" value="">
 
     <table border="1">
       <tr>
         <th>選択</th>
-        <th>番号</th>
         <th>資産コード</th>
         <th>資産名</th>
         <th>所得年月日</th>
@@ -36,11 +37,10 @@
         <th>写真</th>
         <th>帰りたい</th>
       </tr>
-      <form method="post">
+      
       <% for(var i in content){ %>
       <tr>
-        <td><label><input type="radio" name="radio" value="<%= content[i].id %>"></label></td>
-        <td><%=content[i].id %></td>
+        <td><label><input type="radio" name="radio" value="<%= content[i].code %>"></label></td>
         <td><%=content[i].code %></td>
         <td><%=content[i].name %></td>
         <td><%=content[i].date %></td>
@@ -54,18 +54,7 @@
       </tr>
       <% } %>
     </table>
-    <dialog id="conf_dialog">
-        <h5 id="subtitle_content"></h5>
-        <input type="hidden" name="mode" id="hidden_content" value="">
-        <p id="conf_text"></p>
-        <input id="conf_button" type="submit" value="">
-      </form>
-      <button id="back_button">戻る</button>
-    </dialog>
-    
-    <footer>
-
-    </footer>
+    </form>
 
     <dialog id="narrow_dialog">
       <form method="post">
@@ -122,11 +111,11 @@
 
         today.setDate(today.getDate());
 
-        var yyyy = today.getFullYear();
-        var mm = ("0" + (today.getMonth() + 1)).slice(-2);
-        var dd = ("0" + today.getDate()).slice(-2);
+        var year = today.getFullYear();
+        var month = ("0" + (today.getMonth() + 1)).slice(-2);
+        var day = ("0" + today.getDate()).slice(-2);
 
-        document.getElementById("today").value = yyyy + '-' + mm + '-' + dd;
+        document.getElementById("today").value = year + '-' + month + '-' + day;
       }
 
       //絞り込みの処理
@@ -142,64 +131,46 @@
       });
       
       //変更の処理
-      const conf_dialog = document.getElementById("conf_dialog");
       const change_button = document.getElementById("change_button");
-      const back_button = document.getElementById("back_button");
       const radio_button = document.getElementsByName("radio");
+      const hidden = document.getElementById("hidden_content");
 
       change_button.addEventListener("click", function(event){//変更ボタンを押したら実行
         var change_flag = false;
-        var change_id;
 
         for (var i = 0; i < radio_button.length; i++) {//どのラジオボタンが押されているか確認
          if (radio_button[i].checked) {
           change_flag = true;
-          change_id = radio_button[i].value;
          }
         }
         if(change_flag){//押されていればダイアログを出して、表示分を形成
-          document.getElementById("subtitle_content").textContent = "変更確認";
-          document.getElementById("hidden_content").value = "change_mode";
-          document.getElementById("conf_text").textContent = "id=" + change_id + "を変更します";
-          document.getElementById("conf_button").value = "変更"
-          conf_dialog.showModal();
+          hidden.value="change_mode"
+          change_button.type="submit"
           
         }
         if(!change_flag){//押されていなければエラー
           alert("変更エラー:何も選択されていません");
         }
       });
-      back_button.addEventListener("click", function(event){//戻るボタンで閉じる
-        conf_dialog.close();
-      });
       
       //申請の処理
       const request_button = document.getElementById("request_button");
-      const request_back = document.getElementById("request_back");
 
       request_button.addEventListener("click", function(event){//申請ボタンを押したら実行
         var request_flag = false;
-        var request_id;
 
         for (var i = 0; i < radio_button.length; i++) {//どのラジオボタンが押されているか確認
          if (radio_button[i].checked) {
           request_flag = true;
-          request_id = radio_button[i].value;
          }
         }
         if(request_flag){//押されていればダイアログを出して
-          document.getElementById("subtitle_content").textContent = "申請確認";
-          document.getElementById("hidden_content").value = "request_mode";
-          document.getElementById("conf_text").textContent = "id=" + request_id + "を申請します";
-          document.getElementById("conf_button").value = "申請"
-          conf_dialog.showModal();
+          hidden.value="request_mode";
+          request_button.type="submit";
         }
         if(!request_flag){//押されていなければエラー
           alert("申請エラー:何も選択されていません");
         }
-      });
-      back_button.addEventListener("click", function(event){//戻るボタンで閉じる
-        conf_dialog.close();
       });
     </script>
   </body>

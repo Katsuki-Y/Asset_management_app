@@ -13,7 +13,10 @@
     <table>
         <tr>
             <th>資産コード</th>
-            <td><input type="text" name="code" value="" required></td>
+            <td>
+                <p id="autocode"></p>
+                <input type="hidden" name="code" id="hidden_code" value="">
+            </td>
         </tr>
         <tr>
             <th>資産名</th>
@@ -21,7 +24,7 @@
         </tr>
         <tr>
             <th>所得年月日</th>
-            <td><input type="date" name="date" value="" required></td>
+            <td><input type="date" name="date" value="" id="date" required></td>
         </tr>
         <tr>
             <th>型式</th>
@@ -54,14 +57,50 @@
             <td><input type="text" name="picture" value="未実装" required></td>
         </tr>
         <tr>
+            <th>使用者</th>
+            <td><select name="user">
+                <% for(var i in users){ %>
+                <% if(users[i].admin === "0"){ %>
+                    <option value="<%= users[i].name%>"><%= users[i].name%></option>
+                <% } %>
+                <% } %>
+            </select></td>
+        </tr>
+        <tr>
             <th></th>
             <td><input type="submit" value="送信"></td>
         </tr>
     </table>
     </form>
     <button onclick="location.href='/'">戻る</button>
-    <footer>
+    <script>
+        const date = document.getElementById("date");
 
-    </footer>
+        /*date.addEventListener("change", function(event){
+            var inputdate = date.value.split("-").join("");
+
+            
+        });*/
+
+        window.onload = function () {//今日の日付を取得する
+
+          var today = new Date();
+
+          today.setDate(today.getDate());
+
+          var year = today.getFullYear();
+          var month = ("00" + (today.getMonth() + 1)).slice(-2);
+          var day = ("00" + today.getDate()).slice(-2);
+
+          var id = "<%= maxid %>";
+          id = Number(id) + 1;
+          id = ("0000" + id).slice(-4);
+
+          var code = year + month + day + id;
+
+          document.getElementById("autocode").textContent = code;
+          document.getElementById("hidden_code").value = code;
+        }
+    </script>
   </body>
 </html>

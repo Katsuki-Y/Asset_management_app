@@ -3,6 +3,31 @@
 ・res.renderの第２引数はオブジェクトでなければいけない
 ・Node.jsでcssのような静的ファイルを利用するには、express.staticが必要
 */
+function String_Cut_20(str){//文字をカットする関数
+  str = str.toString();
+  if(str.length > 20){//文字数が20以上ならカット
+    str = str.slice(0, 20);
+    str += "...";
+  }
+  return str;
+}
+function String_Cut_40(str){//文字をカットする関数
+  str = str.toString();
+  if(str.length > 40){//文字数が40以上ならカット
+    str = str.slice(0, 40);
+    str += "...";
+  }
+  return str;
+}
+
+function date_to_string(date){//dateをstringに変換する関数
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var date = date.getDate();
+        
+  date = year + "年" + month + "月" + date + "日";
+  return date;
+}
 
 const express = require('express');
 const mysql = require('mysql');
@@ -57,18 +82,23 @@ app.get('/', (req, res) => {//メニュー画面
     users:users_data,
     user:now_user
   }
+  var all_data_sql = 'select * from test where status != "廃棄"'
 
-  connection.query('select * from test where status != "廃棄"', (err, results, fields) =>{//登録されている資産を持ってくる
+  if(now_user !== "admin"){
+    all_data_sql += " AND user = '" + now_user + "'"
+  }
+
+  connection.query(all_data_sql , now_user, (err, results, fields) =>{//登録されている資産を持ってくる
     if(err) throw err;
 
     all_data.content = results;//SQL文の結果を代入
 
-    for(var i in all_data.content){//date型のままでは厄介なので文字列に変換
-      var year = all_data.content[i].date.getFullYear();
-      var month = all_data.content[i].date.getMonth() + 1;
-      var date = all_data.content[i].date.getDate();
-        
-      all_data.content[i].date = year + "年" + month + "月" + date + "日";
+    for(var i in all_data.content){
+      all_data.content[i].name = String_Cut_20(all_data.content[i].name);//文字がながければカット
+      all_data.content[i].model = String_Cut_20(all_data.content[i].model);
+      all_data.content[i].place = String_Cut_20(all_data.content[i].place);
+
+      all_data.content[i].date = date_to_string(all_data.content[i].date);//date型のままでは厄介なので文字列に変換
     }
 
     res.render("menu.ejs", all_data);//オブジェクトでejsファイルに渡す、オブジェクト以外渡せない
@@ -93,8 +123,11 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
   
     //sql文を事前に形成し、絞り込み条件を条件分岐で追加する
     var narrow_text = "select * from test where date BETWEEN '" + date_start + "' AND '" + date_end + "' ";
+    if(now_user !== "admin"){
+      user_info = now_user;
+    }
     if(user_info !== "未設定"){
-      narrow_text += "AND user = '"+ user_info + "' ";
+      narrow_text += "AND user = '" + user_info + "' ";
     }
     if(place !== ""){
       narrow_text += "AND place LIKE '%" + place + "%' ";
@@ -109,12 +142,12 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
   
       narrow_data.content = results;
   
-      for(var i in narrow_data.content){//date型のままでは厄介なので文字列に変換
-        var year = narrow_data.content[i].date.getFullYear();
-        var month = narrow_data.content[i].date.getMonth() + 1;
-        var date = narrow_data.content[i].date.getDate();
-          
-        narrow_data.content[i].date = year + "年" + month + "月" + date + "日";
+      for(var i in narrow_data.content){
+        narrow_data.content[i].name = String_Cut_20(narrow_data.content[i].name);//文字がながければカット
+        narrow_data.content[i].model = String_Cut_20(narrow_data.content[i].model);
+        narrow_data.content[i].place = String_Cut_20(narrow_data.content[i].place);
+  
+        narrow_data.content[i].date = date_to_string(narrow_data.content[i].date);//date型のままでは厄介なので文字列に変換
       }
   
       res.render("menu.ejs", narrow_data);
@@ -140,6 +173,11 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
 
 app.get('/insert', (req, res) => {//新規作成
   console.log(get_C + "/insert");
+  if(now_user !== "admin"){
+    res.redirect("/err");
+  }
+  console.log("多忙");
+
   data={
     users:users_data,
     maxid:""
@@ -164,7 +202,6 @@ app.post('/insert', (req, res) =>{//新規作成から送られてきた情報�
         "picture":req.body.picture,
         "user":req.body.user
     };
-    console.log(insert_data);
     
     connection.query("insert into test set ?", insert_data, function (error, results, fields) {//追加する
     });
@@ -175,11 +212,7 @@ app.get("/change", (req,res)=>{//変更画面へ推移
   console.log(get_C + "/change");
 
   for(var i in change_data.content){//date型のままでは厄介なので文字列に変換
-    var year = change_data.content[i].date.getFullYear();
-    var month = change_data.content[i].date.getMonth() + 1;
-    var date = change_data.content[i].date.getDate();
-      
-    change_data.content[i].date = year + "年" + month + "月" + date + "日";
+    change_data.content[i].date = date_to_string(change_data.content[i].date);
   }
 
   res.render("change.ejs" , change_data);
@@ -229,6 +262,10 @@ app.post("/request", (req, res) =>{
 app.get("/notice", (req, res) =>{
   console.log(get_C + "/notice");
 
+  if(now_user !== "admin"){
+    res.redirect("/err");
+  }
+
   notice_data={
     content:""
   };
@@ -236,6 +273,12 @@ app.get("/notice", (req, res) =>{
   //申請が処理されたかを判断するため、processedという0-処理済み,1-未処理のカラムを使っている
   connection.query("select * from requests where processed = 1", (err, results, firlds) =>{
     notice_data.content = results;
+
+    for(var i in notice_data.content){
+      notice_data.content[i].model = String_Cut_20(notice_data.content[i].model);
+      notice_data.content[i].reason = String_Cut_40(notice_data.content[i].reason);
+      
+    }
 
     res.render("notice.ejs", notice_data);
   });
@@ -275,6 +318,11 @@ app.post("/notice", (req, res) =>{
   
         narrow_data.content = results;
 
+        for(var i in narrow_data.content){
+          narrow_data.content[i].model = String_Cut_20(narrow_data.content[i].model);
+          narrow_data.content[i].reason = String_Cut_40(narrow_data.content[i].reason);
+          
+        }
         res.render("notice.ejs", narrow_data);
       })    
     } 
@@ -283,6 +331,10 @@ app.post("/notice", (req, res) =>{
 
 app.get("/print", (req,res) =>{
   console.log(get_C + "/print");
+
+  if(now_user !== "admin"){
+    res.redirect("/err");
+  }
 
   var print_data={
     content:""
@@ -325,11 +377,7 @@ app.get("/inventory_output", (req, res)=>{
     inventory_data.content = results;
 
     for(var i in inventory_data.content){//date型のままでは厄介なので文字列に変換
-      var year = inventory_data.content[i].date.getFullYear();
-      var month = inventory_data.content[i].date.getMonth() + 1;
-      var date = inventory_data.content[i].date.getDate();
-        
-      inventory_data.content[i].date = year + "年" + month + "月" + date + "日";
+      inventory_data.content[i].date = date_to_string(inventory_data.content[i].date);
     }
 
     res.render("inventory_output.ejs", inventory_data);
@@ -376,6 +424,11 @@ app.post("/login", (req,res)=>{
   now_user = req.body.login_name;
 
   res.redirect("/");
+});
+
+app.get("/err", (req,res) =>{
+  console.log(get_C + "/err");
+  res.render("err.ejs");
 });
 
 app.listen(3000);

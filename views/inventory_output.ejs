@@ -7,36 +7,39 @@
   </head>
   <body>
     <header>
-        <h1>棚卸し(出力)ページ</h1>
+        <h2>棚卸し(出力)ページ</h2>
+        <a href="/">メニュー</a>
     </header>
-    <a id="download">棚卸しファイルを取得</a>
-    <button onclick="location.href='/'">戻る</button>
-    <h3>↓棚卸し実行で出力されるデータ↓</h3>
 
-    <table id="inventory_data" border="1">
+    <div id="content">
+    <a id="download">棚卸しファイルを取得</a>
+    <h3>棚卸し実行で出力されるデータ</h3>
+
+    <table id="inventory_data">
       <tr>
-        <th>資産コード</th>
-        <th>資産名</th>
-        <th>所得年月日</th>
-        <th>型式</th>
-        <th>数量</th>
-        <th>値段</th>
-        <th>使用場所</th>
-        <th>ステータス</th>
+        <th class="table_code">資産コード</th>
+        <th class="table_name">資産名</th>
+        <th class="table_date">所得年月日</th>
+        <th class="table_model">型式</th>
+        <th class="table_quantity">数量</th>
+        <th class="table_price">値段</th>
+        <th class="table_place">使用場所</th>
+        <th class="table_status">ステータス</th>
       </tr>
       <% for(var i in content){ %>
       <tr>
-        <td><%=content[i].code %></td>
-        <td><%=content[i].name %></td>
-        <td><%=content[i].date %></td>
-        <td><%=content[i].model %></td>
-        <td><%=content[i].quantity %></td>
-        <td><%=content[i].price %></td>
-        <td><%=content[i].place %></td>
-        <td><%=content[i].status %></td>
+        <td class="table_code"><%=content[i].code %></td>
+        <td class="table_name"><%=content[i].name %></td>
+        <td class="table_date"><%=content[i].date %></td>
+        <td class="table_model"><%=content[i].model %></td>
+        <td class="table_quantity"><%=content[i].quantity %></td>
+        <td class="table_price"><%=content[i].price %></td>
+        <td class="table_place"><%=content[i].place %></td>
+        <td class="table_status"><%=content[i].status %></td>
       </tr>
       <% } %>
     </table>
+    </div>
 
     <script>
     const table = document.getElementById('inventory_data');

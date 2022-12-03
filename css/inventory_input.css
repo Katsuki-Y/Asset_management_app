@@ -1,0 +1,105 @@
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: #FFFFFF;
+    color: #000000;
+    display:flex;
+    align-items: center;
+}
+header h2{
+    margin:0 0 0 60px;
+}
+header a{
+    color:black;
+    margin:0 60px 0 auto;
+    text-decoration: none;
+}
+header a:hover{
+    color:gray
+}
+body{
+    padding-top:70px;
+    background-color: rgb(220, 255, 255);
+}
+#content{
+    width:1200px;
+    margin:30px auto 30px auto;
+    padding-bottom: 100px;
+}
+#content p{
+    font-size: 15px;
+    padding: 0 0 0 15px;
+}
+#content input{
+    font-size: 15px;
+    padding: 0 0 10px 15px
+}
+table{
+    table-layout: fixed;
+    border:groove;
+    width:100%;
+}
+th, td{
+    padding: 8px;
+    border: 1px solid rgb(204, 204, 204);
+  }
+th{
+  font-size: 15px;
+  text-align: left;
+  background-color: #38c9e9;
+}
+td{
+    font-size: 15px;
+    text-align: center;
+    background-color: #FFFFFF;
+  }
+.table_code{
+    width:12%;
+    word-wrap: break-word;
+}
+.table_name{
+    width: 14%;
+    word-wrap: break-word;
+}
+.table_date{
+    width: 12%;
+    word-wrap: break-word;
+}
+.table_model{
+    width:15%;
+    word-wrap: break-word;
+}
+.table_quantity{
+    width: 7%;
+    word-wrap: break-word;
+}
+.table_price{
+    width:7%;
+    word-wrap: break-word;
+}
+.table_place{
+    width:25%;
+    word-wrap: break-word;
+}
+.table_status{
+    width:8%;
+    word-wrap: break-word;
+}
+
+#content #submit_button input{
+    width:250px;
+    background-color: #38c9e9;
+    color:black;
+    display: block;
+    margin: 20px auto;
+    padding:20px;
+    border-radius:10px;
+    font-size: 15px;
+    border-style:none;
+}
+#content #submit_button input:hover{
+    background-color:#138da8;
+}

@@ -7,23 +7,20 @@
   </head>
   <body>
     <header>
-        <h1>ログインページ</h1>
+        <h2>ログインページ</h2>
+        <a href="/">メニュー</a>
     </header>
-    <form method="post">
-        <div>
-            <p>ユーザー名を入力</p>
-            <input type="text" name ="login_name" id = "login" value = "" required>
-        </div>
-        <div>
-            <p>パスワード</p>
-            <input type="text" id ="pass" value = "" required>
-        </div>
-        <input type="submit" value="ログイン" onclick="return word_check()">
-    </form>
-    <button onclick="location.href='/'">戻る</button>
-    <footer>
+    <div id="content">
+        <form method="post">
+            
+            <input type="text" name ="login_name" id = "login" value = "" placeholder="username" required>
+            
+            <input type="text" id ="pass" value = "" placeholder="password" required>
+            
+            <input type="submit" value="ログイン" onclick="return word_check()">
+        </form>
+    </div>
 
-    </footer>
     <script>
         function word_check(){
             var admin_flag = false;

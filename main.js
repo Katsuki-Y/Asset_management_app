@@ -176,7 +176,6 @@ app.get('/insert', (req, res) => {//新規作成
   if(now_user !== "admin"){
     res.redirect("/err");
   }
-  console.log("多忙");
 
   data={
     users:users_data,
@@ -399,6 +398,7 @@ app.post("/inventory_input", (req, res)=>{
     var status = req.body.status[i];
 
     connection.query("update test set place = ?, status = ? where code = ?", [place, status, code], function(err, results, fields){
+      if(err) throw err;
     });
   }
   res.redirect("/");

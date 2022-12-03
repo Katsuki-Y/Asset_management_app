@@ -7,35 +7,38 @@
   </head>
   <body>
     <header>
-        <h1>変更ページ</h1>
-        <p><%=content[0].code %>を変更しています</p>
+        <div id="header_left">
+            <h2>変更ページ</h2>
+        </div>
+        <a href='/'>メニュー</a>
     </header>
-    <form method="post">
+    <div id="content_table">
         <table>
             <tr>
                 <th>資産コード</th>
-                <td><p><%=content[0].code%></p></td>
+                <td><%=content[0].code%></td>
             </tr>
             <tr>
                 <th>資産名</th>
-                <td><p><%=content[0].name%></p></td>
+                <td><%=content[0].name%></td>
             </tr>
             <tr>
                 <th>所得年月日</th>
-                <td><p><%=content[0].date%></p></td>
+                <td><%=content[0].date%></td>
             </tr>
             <tr>
                 <th>型式</th>
-                <td><p><%=content[0].model%></p></td>
+                <td><%=content[0].model%></td>
             </tr>
             <tr>
                 <th>数量</th>
-                <td><p><%=content[0].quantity%></p></td>
+                <td><%=content[0].quantity%>個</td>
             </tr>
             <tr>
                 <th>値段</th>
-                <td><p><%=content[0].price%></p></td>
+                <td><%=content[0].price%>円</td>
             </tr>
+    <form method="post">
             <tr>
                 <th>使用場所</th>
                 <td><input type="text" name="place" value="<%=content[0].place%>" maxlength="500"></td>
@@ -54,15 +57,10 @@
                 <th>写真</th>
                 <td><input type="text" name="picture" value="未実装"></td>
             </tr>
-            <tr>
-                <th></th>
-                <td>
-                    <input type="submit" value="変更確定">
-                    <button onclick="location.href='/'" type="button">戻る</button>
-                </td>
-            </tr>
         </table>
-        </form>
+        <input id="submit_button" type="submit" value="変更確定">
+    </form>
+    </div>
     <script>
         const pulldown = document.getElementById("status_pulldown");
         const text = pulldown.innerText.split("\n");

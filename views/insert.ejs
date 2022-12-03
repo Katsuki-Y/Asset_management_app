@@ -7,9 +7,11 @@
   </head>
   <body>
     <header>
-        <h1>新規作成ページ</h1>
+        <h2>新規作成ページ</h2>
+        <a href='/'>メニュー</a>
     </header>
-    <form method="post">
+    <div id="form_content">
+    <form method="post" autocomplete="off">
     <table>
         <tr>
             <th>資産コード</th>
@@ -19,23 +21,23 @@
             </td>
         </tr>
         <tr>
-            <th>資産名</th>
+            <th class="required">資産名(必須)</th>
             <td><input type="text" name="name" value="" maxlength="500" required></td>
         </tr>
         <tr>
-            <th>所得年月日</th>
+            <th class="required">所得年月日(必須)</th>
             <td><input type="date" name="date" value="" id="date" required></td>
         </tr>
         <tr>
-            <th>型式</th>
+            <th class="required">型式(必須)</th>
             <td><input type="text" name="model" value="" maxlength="500" required></td>
         </tr>
         <tr>
-            <th>数量</th>
+            <th class="required">数量(必須)</th>
             <td><input type="number" name="quantity" value="" required></td>
         </tr>
         <tr>
-            <th>値段</th>
+            <th class="required">値段(必須)</th>
             <td><input type="number" name="price" value="" required></td>
         </tr>
         <tr>
@@ -66,13 +68,10 @@
                 <% } %>
             </select></td>
         </tr>
-        <tr>
-            <th></th>
-            <td><input type="submit" value="送信"></td>
-        </tr>
     </table>
+    <input id="submit_button" type="submit" value="新規作成">
     </form>
-    <button onclick="location.href='/'">戻る</button>
+    </div>
     <script>
         const date = document.getElementById("date");
 

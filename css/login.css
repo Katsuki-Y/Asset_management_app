@@ -1,0 +1,53 @@
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: #FFFFFF;
+    color: #000000;
+    display:flex;
+    align-items: center;
+}
+header h2{
+    margin:0 0 0 60px;
+}
+header a{
+    color:black;
+    margin:0 60px 0 auto;
+    text-decoration: none;
+}
+header a:hover{
+    color:gray;
+}
+body{
+    padding-top:70px;
+    background-color: rgb(220, 255, 255);
+}
+#content{
+    width:400px;
+    padding: 20px;
+    margin:30px auto 0 auto;
+    background-color: white;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+#content input[type="text"]{
+    display: block;
+    width:70%;
+    padding:10px;
+    margin:30px auto;
+}
+#content input[type="submit"]{
+    width:75%;
+    background-color: #38c9e9;
+    color:black;
+    display: block; 
+    margin: 10px auto;
+    padding:15px;
+    border-radius:10px;
+    font-size: 15px;
+    border:none;
+}
+#content input[type="submit"]:hover{
+    background-color: #138da8;
+}

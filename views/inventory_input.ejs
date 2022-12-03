@@ -7,30 +7,34 @@
   </head>
   <body>
     <header>
-        <h1>棚卸し(入力)ページ</h1>
+        <h2>棚卸し(入力)ページ</h2>
+        <a href="/">メニュー</a>
     </header>
+    
+    <div id="content">
 
-    <p>csvファイルの入力はこちら</p>
+      <p>csvファイルの入力はここから</p>
     <input type="file" id="csv_file" accept=".csv">
-    <button onclick="location.href='/'">戻る</button>
 
     <form method="post">
         <table id="inbentory_table" border="1">
             <thead>
-                <th>資産コード</th>
-                <th>資産名</th>
-                <th>取得年月日</th>
-                <th>形式</th>
-                <th>数量</th>
-                <th>値段</th>
-                <th>使用場所</th>
-                <th>ステータス</th>
+              <th class="table_code">資産コード</th>
+              <th class="table_name">資産名</th>
+              <th class="table_date">所得年月日</th>
+              <th class="table_model">型式</th>
+              <th class="table_quantity">数量</th>
+              <th class="table_price">値段</th>
+              <th class="table_place">使用場所</th>
+              <th class="table_status">ステータス</th>
             </thead>
             <tbody id="inventory_table_tbody"></tbody>
         </table>
-            <div id="submit_button"></div>
-    </form>
+            <div id="submit_button">
 
+            </div>
+    </form>
+    </div>
 
     <script>
       const fileInput = document.getElementById('csv_file');
@@ -92,20 +96,20 @@
         var update_tbody = "";
         for (item of items) {//csvで読み込んだ分、htmlを追加
           update_tbody += `<tr>
-          <td>
+          <td class="table_code">
             ${item.code}
             <input type="hidden" name="code" value="${item.code}">
           </td>
-          <td>${item.name}</td>
-          <td>${item.date}</td>
-          <td>${item.model}</td>
-          <td>${item.quantity}</td>
-          <td>${item.price} </td>
-          <td>
+          <td class="table_name">${item.name}</td>
+          <td class="table_date">${item.date}</td>
+          <td class="table_model">${item.model}</td>
+          <td class="table_quantity">${item.quantity}</td>
+          <td class="table_price">${item.price} </td>
+          <td class="table_place">
             ${item.place}
             <input type="hidden" name="place" value="${item.place}">
           </td>
-          <td>
+          <td class="table_status">
             ${item.status}
             <input type="hidden" name="status" value="${item.status}">
           </td>
@@ -113,7 +117,7 @@
           `
         }
         tbody.innerHTML = update_tbody;
-        submit.innerHTML = '<input type="submit" value="反映">'//ボタンも追加
+        submit.innerHTML = '<input type="submit" value="反映" padding:10px>'//ボタンも追加
       }
     </script>
  </body>

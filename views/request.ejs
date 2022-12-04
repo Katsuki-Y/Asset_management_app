@@ -7,23 +7,36 @@
 </head>
 <body>
     <header>
-        <h1>申請ページ</h1>
+        <h2>申請ページ</h2>
+        <a href="/">メニュー</a>
     </header>
-
-    <p>資産コード:<%= code%></p>
-
-    <form method="post">
-        <select name="request_type">
-            <option value="廃棄申請" selected>廃棄申請</option>
-            <option value="修理申請">修理申請</option>
-            <option value="シール再発行申請">シール再発行申請</option>
-        </select>
-        <br>
-        <textarea name="request_reason" cols="30" rows="5" maxlength="500"></textarea>
-        <br>
-
-        <input type="submit" value="申請確定">
-    </form>
-    <button onclick="location.href='/'">戻る</button>
+    <div id="content">
+        <form method="post">
+        <table>
+            <tr>
+                <th>資産コード</th>
+                <td><%= code%></td>
+            </tr>
+            
+            <tr>
+                <th class="required">申請種類(必須)</th>
+                <td>
+                    <select name="request_type">
+                    <option value="廃棄申請" selected>廃棄申請</option>
+                    <option value="修理申請">修理申請</option>
+                    <option value="シール再発行申請">シール再発行申請</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <th class="required">申請理由(必須)</th>
+                <td>
+                    <textarea name="request_reason" cols="30" rows="5" maxlength="500" required></textarea>
+                </td>
+            </tr>
+        </table>
+            <input type="submit" value="申請確定">
+        </form>
+    </div>    
 </body>
 </html>

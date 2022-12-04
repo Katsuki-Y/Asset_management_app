@@ -7,65 +7,75 @@
   </head>
   <body>
     <header>
-        <h1>資産管理ページ</h1>
+      <div id="header_left">
+        <a href="/login">ログイン</a>
+      </div>
+      <div id="header_middle">
+        <h2>資産管理アプリケーション</h2>
+      </div>
+      <div id="header_right">
+        <% if(user === "admin"){ %>
+        <a href="/insert">新規作成</a>
+        <a href="/notice">通知</a>
+        <% } %>
+      </div>
     </header>
-    <p><%=user%></p>
-    <button onclick="location.href='/login'">ログイン</button>
-    <br>
-    <% if(user === "admin"){ %>
-    <button onclick="location.href='/insert'">新規作成</button>
-    <button onclick="location.href='/notice'">通知</button>
-    <% } %>
-    <br>
-    <button onclick="location.href='/inventory_output'">棚卸し(出力)</button>
-    <button onclick="location.href='/inventory_input'">棚卸し(入力)</button>
-    <button id="narrow_button">絞り込み</button>
-    <form method="post">
-    <button id="change_button" type="button">変更</button>
-    <button id="request_button" type="button">申請</button>
-    <input type="hidden" id="hidden_content" name="mode" value="">
+    <div id="main_content">
 
-    <table border="1">
+    
+
+    現在のユーザー:<%=user%><br>
+    <div id="ope_buttons">
+      <form method="post">
+        <button id="narrow_button" type="button">絞り込み</button>
+        <button id="change_button" type="button">変更</button>
+        <button id="request_button" type="button">申請</button>
+        <input type="hidden" id="hidden_content" name="mode" value="">
+    </div>
+    <div id="inventory_buttons">
+      <button onclick="location.href='/inventory_output'" type="button">棚卸し:出力</button>
+      <button onclick="location.href='/inventory_input'" type="button">棚卸し:入力</button>
+    </div>
+    <table>
       <tr>
-        <th>選択</th>
-        <th>資産コード</th>
-        <th>資産名</th>
-        <th>所得年月日</th>
-        <th>型式</th>
-        <th>数量</th>
-        <th>値段</th>
-        <th>使用場所</th>
-        <th>ステータス</th>
-        <th>写真</th>
-        <th>帰りたい</th>
+        <th class="table_choose">選択</th>
+        <th class="table_code">資産コード</th>
+        <th class="table_name">資産名</th>
+        <th class="table_date">所得年月日</th>
+        <th class="table_model">型式</th>
+        <th class="table_quantity">数量</th>
+        <th class="table_price">値段</th>
+        <th class="table_place">使用場所</th>
+        <th class="table_status">ステータス</th>
+        <th class="table_photo">写真</th>
       </tr>
       
       <% for(var i in content){ %>
       <tr>
         <td><label><input type="radio" name="radio" value="<%= content[i].code %>"></label></td>
-        <td><%=content[i].code %></td>
-        <td><%=content[i].name %></td>
-        <td><%=content[i].date %></td>
-        <td><%=content[i].model %></td>
-        <td><%=content[i].quantity %></td>
-        <td><%=content[i].price %></td>
-        <td><%=content[i].place %></td>
-        <td><%=content[i].status %></td>
-        <td><%=content[i].picture %></td>
-        <td><img src="data:image/png;base64,<%= content[i].pict %>"></td>
+        <td class="table_code"><%=content[i].code %></td>
+        <td class="table_name"><%=content[i].name %></td>
+        <td class="table_date"><%=content[i].date %></td>
+        <td class="table_model"><%=content[i].model %></td>
+        <td class="table_quantity"><%=content[i].quantity %>個</td>
+        <td class="table_price"><%=content[i].price %>円</td>
+        <td class="table_place"><%=content[i].place %></td>
+        <td class="table_status"><%=content[i].status %></td>
+        <td class="table_photo"><a href="">表示</a></td>
       </tr>
       <% } %>
     </table>
     </form>
+    </div>
 
     <dialog id="narrow_dialog">
       <form method="post">
-      <h5>絞り込む内容を選択してくだい</h5>
+      <h3>絞り込み</h3>
       <input type="hidden" name="mode" value="narrow_mode">
       <table>
         <% if(user === "admin"){ %>
         <tr>
-          <th>使用者で絞り込み</th>
+          <th>使用者</th>
           <td>
             <select name="narrow_user">
               <option value="未設定">未設定</option>
@@ -77,14 +87,14 @@
         </tr>
         <% } %>
         <tr>
-          <th>取得年月日で絞り込み</th>
+          <th>取得年月日</th>
           <td>
-            <input type="date" name="narrow_date_start" value="2020-01-01">から
-            <input type="date" name="narrow_date_end" id="today">まで
+            <input type="date" name="narrow_date_start" value="2020-01-01">〜
+            <input type="date" name="narrow_date_end" id="today">
           </td>
         </tr>
         <tr>
-          <th>使用場所(完全一致)</th>
+          <th>使用場所</th>
           <td>
             <input type="text" name="narrow_place" value="">
           </td>
@@ -103,9 +113,13 @@
           </td>
         </tr>
       </table>
-      <input type="submit" value="絞り込み">
+      <div id="go_home">
+        <input  class="narrow_buttons" type="submit" value="絞り込み">
+        <button class="narrow_buttons" id="narrow_back" type="button">戻る</button>
+      </div>
+      
     </form>
-      <button id="narrow_back">戻る</button>
+      
   </dialog>
 
     <script>

@@ -7,22 +7,24 @@
 </head>
 <body>
     <header>
-        <h1>通知</h1>
+        <h2>申請通知</h2>
+        <a href="/">メニュー</a>
     </header>
+    <div id="content">
     <form method="post">
-    <input type="hidden" name="mode" id="mode" value="">
-    <button id="print_button" type="button">書類作成</button>
-    <button id="narrow_button" type="button">絞り込み</button>
-    <button onclick="location.href='/'" type="button">メニューへ戻る</button>
-
-    <table border="1">
+        <div id="content_buttons">
+            <input type="hidden" name="mode" id="mode" value="">
+            <button id="print_button" type="button">書類作成</button>
+            <button id="narrow_button" type="button">絞り込み</button>
+        </div>
+    <table id="notice_table">
         <tr>
-            <th>選択</th>
-            <th>資産コード</th>
-            <th>使用者名</th>
-            <th>申請種類</th>
-            <th>申請理由</th>
-            <th>処理状態(未処理:1 処理済:0)</th>
+            <th class="table_choose">選択</th>
+            <th class="table_code">資産コード</th>
+            <th class="table_user">使用者名</th>
+            <th class="table_type">申請種類</th>
+            <th class="table_reason">申請理由</th>
+            <th class="table_process">処理状態</th>
         </tr>
         <% for(var i in content){ %>
             <tr>
@@ -35,15 +37,19 @@
                 <td><%= content[i].user%></td>
                 <td><%= content[i].type%></td>
                 <td><%= content[i].reason%></td>
-                <td><%= content[i].processed%></td>
+                <% if(content[i].processed){ %>
+                <td>未処理</td>
+                <% }else{ %>
+                <td>処理済</td>
+                <% } %>
             </tr>
         <% } %>
     </table>
     <dialog id="narrow_dialog">
-        <h5>絞り込む内容を選択してくだい</h5>
+        <h3>絞り込み</h3>
         <table>
           <tr>
-            <th>申請種類で絞り込み</th>
+            <th>申請種類</th>
             <td>
                 <select name="narrow_status">
                   <option value="未設定" checked>未設定</option>
@@ -53,13 +59,17 @@
                 </select>
             </td>
           </tr>
-          <th>
-            処理済みも表示<input type="checkbox" name="processed">
-          </th>
+          <th>処理済みも表示</th>
+          <td>
+            <input id="process_checkbox" type="checkbox" name="processed">
+          </td>
         </table>
-        <input type="submit" value="絞り込み">
-        <button id="narrow_back" type="button">戻る</button>
+        <div id="go_home">
+            <input class="narrow_buttons" type="submit" value="絞り込み">
+            <button class="narrow_buttons" id="narrow_back" type="button">戻る</button>
+        </div>
     </dialog>
+    </div>
     </form>
     <script>
         const print_button = document.getElementById("print_button");

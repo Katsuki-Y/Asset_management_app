@@ -76,6 +76,10 @@ const connection = mysql.createConnection({//mysqlに接続するために使う
 
 app.get('/', (req, res) => {//メニュー画面
   console.log(get_C + "/");//いつどのURLに飛んだのかをconsole.logで確認するもの、デバッグ用
+
+  if(now_user ==="ログインなし"){
+    res.redirect("/login");
+  }
   
   var all_data={//一番最初にメニューを読み込んだ際に表示されるデータ
     content:"",
@@ -210,6 +214,10 @@ app.post('/insert', (req, res) =>{//新規作成から送られてきた情報�
 app.get("/change", (req,res)=>{//変更画面へ推移
   console.log(get_C + "/change");
 
+  if(now_user ==="ログインなし"){
+    res.redirect("/err");
+  }
+
   for(var i in change_data.content){//date型のままでは厄介なので文字列に変換
     change_data.content[i].date = date_to_string(change_data.content[i].date);
   }
@@ -230,6 +238,10 @@ app.post("/change", (req, res)=>{
 
 app.get('/request', (req, res) =>{
   console.log(get_C + "/request");
+
+  if(now_user ==="ログインなし"){
+    res.redirect("/err");
+  }
   
   request_data={//申請するデータ
     code:request_code
@@ -368,6 +380,11 @@ app.post("/print", (req, res)=>{//書類作成して通知として要らなく�
 
 app.get("/inventory_output", (req, res)=>{
   console.log(get_C + "/inventory_output");
+
+  if(now_user ==="ログインなし"){
+    res.redirect("/err");
+  }
+
   var inventory_data={
     content:""
   }
@@ -382,13 +399,18 @@ app.get("/inventory_output", (req, res)=>{
     res.render("inventory_output.ejs", inventory_data);
   });
 });
+//inbentory_outputからのpostはない
 
 app.get("/inventory_input", (req, res)=>{
   console.log(get_C + "inventory_input");
 
+  if(now_user ==="ログインなし"){
+    res.redirect("/err");
+  }
+
   res.render("inventory_input.ejs");
 });
-//inbentory_inputからのpostはない
+
 app.post("/inventory_input", (req, res)=>{
   console.log(pos_C + "inventory_input");
   

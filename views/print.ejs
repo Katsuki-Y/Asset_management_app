@@ -6,21 +6,28 @@
     <link href="css/print.css" rel="stylesheet">
 </head>
 <body>
-    <h1>印刷ページ</h1>
-    <h2>書類印刷方法について</h2>
-    <p>Googleの場合:<br>
+    <header>
+        <h2>印刷ページ</h2>
+    </header>
+    <div id="text_content">
+        <h2>書類印刷方法について</h2>
+        <p>Googleの場合:<br>
         ①右上の︙を押して印刷を選択すると印刷画面が表示される<br>
         ②ページをカスタムに変更し、「2」と入力(2ページ目が出力される)<br>
         ③詳細設定をからオプションの「ヘッダーとフッター」のチャックを外す<br>
         ④印刷をクリック<br>
-    </p>
-    <p>印刷が完了したら下の「完了」をクリックすると今回作成した、項目の通知が削除されます。<br></p>
-    <p>削除したくない場合、印刷しなくても良くなった場合は「戻る」をクリックすると通知欄に戻ることができます<br></p>
+        </p>
+    <p>印刷が完了したら下の「完了」をクリックすると今回作成した項目の通知が処理済とされます。<br></p>
+    <p>処理済としたくない場合、印刷しなくても良くなった場合は「戻る」をクリックすると通知欄に戻ることができます<br></p>
 
-    <form method="post">
-        <input type="submit" value="完了">
-    </form>
-    <button onclick="location.href='/notice'">戻る</button>
+    <div id="print_buttons">
+        <form method="post">
+            <input class="button" type="submit" value="完了">
+        </form>
+        <button class="button" onclick="location.href='/notice'">戻る</button>
+    </div>
+    </div>
+    
 
     <div id="empty_space"></div>
     <h1 id="document_title"><%= content[0].type %></h1>

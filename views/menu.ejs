@@ -61,12 +61,20 @@
         <td class="table_price"><%=content[i].price %>円</td>
         <td class="table_place"><%=content[i].place %></td>
         <td class="table_status"><%=content[i].status %></td>
-        <td class="table_photo"><a href="">表示</a></td>
+        <td class="table_picture"><button type="button" value="<%=i%>" onclick="view(this);return false;">表示</button></td>
       </tr>
       <% } %>
     </table>
     </form>
     </div>
+    <% for(var i in content){ %>
+    <dialog id="openimage<%=i%>">
+        <% var picture_base64 = new Buffer(content[i].picture).toString('base64') %>
+      <div id ="dialog_container">
+      <img src="data:image/png;base64,<%= picture_base64 %>" id="image">
+    </div>
+    </dialog>
+    <% } %>
 
     <dialog id="narrow_dialog">
       <form method="post">
@@ -190,6 +198,18 @@
           alert("申請エラー:何も選択されていません");
         }
       });
+
+      function view(btn){
+          var dialog_id = "openimage" + btn.value;        
+          var image_dialog=document.getElementById(dialog_id);
+          image_dialog.showModal();
+
+        image_dialog.addEventListener('click',(event)=>{
+          if(event.target.closest('#dialog_container') === null){
+            image_dialog.close();
+          }
+        });
+        }
     </script>
   </body>
 </html>

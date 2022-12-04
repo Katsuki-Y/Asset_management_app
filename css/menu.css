@@ -137,6 +137,15 @@ body{
     width: 7%;
     word-wrap: break-word;
 }
+.table_picture button{
+    background-color: #38c9e9;
+    color:black;
+    border-radius:10px;
+    border:none;
+}
+.table_picture button:hover{
+    background-color:#138da8;
+}
 dialog{
     width:600px;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);

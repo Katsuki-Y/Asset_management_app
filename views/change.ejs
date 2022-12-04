@@ -55,7 +55,9 @@
             </tr>
             <tr>
                 <th>写真</th>
-                <td><input type="text" name="picture" value="未実装"></td>
+                <td><input type="file" id="picture_file" accept="image/png" onchange="makebinary(this);">
+                    <input type="hidden" name="picture" id="result">
+                </td>
             </tr>
         </table>
         <input id="submit_button" type="submit" value="変更確定">
@@ -69,6 +71,13 @@
             if(text[i] === "<%= content[0].status %>"){//プルダウンの値を変更前と同じ値に
                 pulldown.selectedIndex = i;
             }
+        }
+        function makebinary(obj){//※アップロードされた画像を文字列にし、id="result"のtextareaに書き込む用の関数
+	        var fileReader = new FileReader();
+	        fileReader.onload = (function() {
+		    document.getElementById('result').value = fileReader.result.slice(22);//※最初の23文字が邪魔なため、slice(22)で除去する
+	        });
+	    fileReader.readAsDataURL(obj.files[0]);
         }
     </script>
   </body>

@@ -38,7 +38,7 @@ const app = express();
 const get_C = '\u001b[31m' + "get " + '\u001b[0m';//どのURLに飛んだのかをconsole.logでわかりやすく確認するためのもの、文字に色を加えてくれる
 const pos_C = '\u001b[34m' + "pos " + '\u001b[0m';
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true ,limit:'10mb'}));
 app.use(express.static("/Applications/MAMP/htdocs"));//Node.jsだとこれを書かないとcssが使えない
 
 const connection = mysql.createConnection({//mysqlに接続するために使うオブジェクト
@@ -86,7 +86,7 @@ app.get('/', (req, res) => {//メニュー画面
     users:users_data,
     user:now_user
   }
-  var all_data_sql = 'select * from test where status != "廃棄"'
+  var all_data_sql = 'select * from assets where status != "廃棄"'
 
   if(now_user !== "admin"){
     all_data_sql += " AND user = '" + now_user + "'"
@@ -126,7 +126,7 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
     var status = req.body.narrow_status;
   
     //sql文を事前に形成し、絞り込み条件を条件分岐で追加する
-    var narrow_text = "select * from test where date BETWEEN '" + date_start + "' AND '" + date_end + "' ";
+    var narrow_text = "select * from assets where date BETWEEN '" + date_start + "' AND '" + date_end + "' ";
     if(now_user !== "admin"){
       user_info = now_user;
     }
@@ -161,7 +161,7 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
   if(req.body.mode === "change_mode"){//変更するとき
     var change_data_code = req.body.radio;//変更する資産のcodeを記録
 
-    connection.query('select * from test where code = ?',change_data_code, (err, results, fields) =>{//codeから変更するデータの情報のみ持ってくる
+    connection.query('select * from assets where code = ?',change_data_code, (err, results, fields) =>{//codeから変更するデータの情報のみ持ってくる
       if(err) throw err;
       
       change_data.content = results;//情報を保存してURL変更
@@ -185,7 +185,7 @@ app.get('/insert', (req, res) => {//新規作成
     users:users_data,
     maxid:""
   };
-  connection.query("select MAX(id) from test", (err, results, fields) =>{
+  connection.query("select MAX(id) from assets", (err, results, fields) =>{
     data.maxid = results[0]["MAX(id)"];//idの最大値を取得、資産コード形成に必要
     res.render('insert.ejs', data);
   })
@@ -193,6 +193,9 @@ app.get('/insert', (req, res) => {//新規作成
 
 app.post('/insert', (req, res) =>{//新規作成から送られてきた情報をspl文で追加
   console.log(pos_C + "/insert");
+  base64_pic=req.body.picture;
+  const base64buf = Buffer.from(base64_pic,'base64');
+
     var insert_data={
         "code":req.body.code,
         "name":req.body.name,
@@ -202,11 +205,11 @@ app.post('/insert', (req, res) =>{//新規作成から送られてきた情報�
         "price":req.body.price,
         "place":req.body.place,
         "status":req.body.status,
-        "picture":req.body.picture,
+        "picture":base64buf,
         "user":req.body.user
     };
     
-    connection.query("insert into test set ?", insert_data, function (error, results, fields) {//追加する
+    connection.query("insert into assets set ?", insert_data, function (error, results, fields) {//追加する
     });
     res.redirect('/');
 });
@@ -227,10 +230,13 @@ app.get("/change", (req,res)=>{//変更画面へ推移
 
 app.post("/change", (req, res)=>{
   console.log(pos_C + "/change");
+  base64_pic=req.body.picture;
+  const base64buf = Buffer.from(base64_pic,'base64');
 
   var change_place = req.body.place;//変更するデータ
   var change_status = req.body.status;
-  connection.query("update test set place = ?, status = ? where code = ?", [change_place, change_status, change_data.content[0].code], function (err, results, fields){
+  connection.query("update assets set place = ?, status = ?, picture = ? where code = ?", [change_place, change_status, base64buf, change_data.content[0].code], function (err, results, fields){
+    if(err) throw err;
   })
 
   res.redirect("/");
@@ -254,7 +260,7 @@ app.post("/request", (req, res) =>{
 
   var temp_data = {};//テンプ用オブジェクト
   //申請する資産の情報を別のデータベースに保存
-  connection.query("select * from test where code = ?", request_code, function(err, results, fields){
+  connection.query("select * from assets where code = ?", request_code, function(err, results, fields){
     temp_data.code = results[0].code;
     temp_data.model = results[0].model;
     temp_data.price = results[0].price;
@@ -389,7 +395,7 @@ app.get("/inventory_output", (req, res)=>{
     content:""
   }
 
-  connection.query("select * from test", (err, results, fields)=>{
+  connection.query("select * from assets", (err, results, fields)=>{
     inventory_data.content = results;
 
     for(var i in inventory_data.content){//date型のままでは厄介なので文字列に変換
@@ -419,7 +425,7 @@ app.post("/inventory_input", (req, res)=>{
     var place = req.body.place[i];
     var status = req.body.status[i];
 
-    connection.query("update test set place = ?, status = ? where code = ?", [place, status, code], function(err, results, fields){
+    connection.query("update assets set place = ?, status = ? where code = ?", [place, status, code], function(err, results, fields){
       if(err) throw err;
     });
   }

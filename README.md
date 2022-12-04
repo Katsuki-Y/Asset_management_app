@@ -1,5 +1,8 @@
 # Asset_management_app
 プログラミング応用 資産管理アプリケーション
+
+祝プロトタイプ完成
+
 ## 実装環境
 OS:MacOS
 

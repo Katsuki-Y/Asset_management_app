@@ -31,3 +31,6 @@ button{
   font-size: 15px;
   border:none;
 }
+button:hover{
+    background-color:#138da8;
+}

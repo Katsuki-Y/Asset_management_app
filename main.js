@@ -126,21 +126,36 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
     var status = req.body.narrow_status;
   
     //sql文を事前に形成し、絞り込み条件を条件分岐で追加する
-    var narrow_text = "select * from assets where date BETWEEN '" + date_start + "' AND '" + date_end + "' ";
+    var narrow_text = "select * from assets"
+    var narrow_array = [];
+
+    if(date_start !== "" && date_end !== ""){
+      narrow_array[narrow_array.length] = " date BETWEEN '" + date_start + "' AND '" + date_end + "' "
+    }else if(date_start !== ""){
+      narrow_array[narrow_array.length] = " date > '" + date_start + "' ";
+    }else if(date_end !== ""){
+      narrow_array[narrow_array.length] = " date < '" + date_end + "' ";
+    }
     if(now_user !== "admin"){
       user_info = now_user;
     }
     if(user_info !== "未設定"){
-      narrow_text += "AND user = '" + user_info + "' ";
+      narrow_array[narrow_array.length] = " user = '" + user_info + "' ";
     }
     if(place !== ""){
-      narrow_text += "AND place LIKE '%" + place + "%' ";
+      narrow_array[narrow_array.length] = " place LIKE '%" + place + "%' ";
     }
     if(status !== "未設定"){
-      narrow_text += "AND status = '" + status + "'";
+      narrow_array[narrow_array.length] = " status = '" + status + "'";
     }else{
-      narrow_text += "AND status != '廃棄'";
+      narrow_array[narrow_array.length] = " status != '廃棄'";
     }
+    narrow_array = narrow_array.join("AND");
+
+    if(narrow_array.length >= 1){
+      narrow_text += " where" + narrow_array;
+    }
+
     connection.query(narrow_text, function(err, results, fields){//絞り込みを含んだsql文を実行
       if(err) throw err;
   
@@ -312,37 +327,40 @@ app.post("/notice", (req, res) =>{
   
   if(req.body.mode === "narrow_mode"){
 
-    if(req.body.narrow_status === "未設定" && req.body.processed !== "on"){//ゴリ押し
-      res.redirect("/notice");
-    }else{
-      narrow_text = "select * from requests where "
-      if(req.body.narrow_status !== "未設定" && req.body.processed === "on"){
-        narrow_text += "type = '"+ req.body.narrow_status + "' ";
-      }
-      if(req.body.narrow_status !== "未設定" && req.body.processed !== "on"){
-        narrow_text += "type = '"+ req.body.narrow_status + "' AND processed = 1";
-      }
-      if(req.body.narrow_status === "未設定" && req.body.processed === "on"){
-        narrow_text += "1"
-      }
+    var type = req.body.narrow_status;
+    var processed = req.body.processed;
+    
+    var narrow_text = "select * from requests";
+    var narrow_array = [];
+    if(type !== "未設定"){
+      narrow_array[narrow_array.length] = " type = '" + type + "' ";
+    }
+    console.log(processed);
+    if(processed !== "on"){
+      narrow_array[narrow_array.length] = " processed = 1";
+    }
+    narrow_array = narrow_array.join("AND");
+    if(narrow_array.length >= 1){
+      narrow_text += " where" + narrow_array;
+    }
+    console.log(narrow_text);
       
-      var narrow_data={
-        content:""
-      };
+    var narrow_data={
+      content:""
+    };
 
-      connection.query(narrow_text, function(err, results, fields){//絞り込みを含んだsql文を実行
-        if(err) throw err;
+    connection.query(narrow_text, function(err, results, fields){//絞り込みを含んだsql文を実行
+      if(err) throw err;
   
-        narrow_data.content = results;
+      narrow_data.content = results;
 
-        for(var i in narrow_data.content){
-          narrow_data.content[i].model = String_Cut_20(narrow_data.content[i].model);
-          narrow_data.content[i].reason = String_Cut_40(narrow_data.content[i].reason);
+      for(var i in narrow_data.content){
+        narrow_data.content[i].model = String_Cut_20(narrow_data.content[i].model);
+        narrow_data.content[i].reason = String_Cut_40(narrow_data.content[i].reason);
           
-        }
-        res.render("notice.ejs", narrow_data);
-      })    
-    } 
+      }
+      res.render("notice.ejs", narrow_data);
+    })     
   }
 });
 

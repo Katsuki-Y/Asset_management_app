@@ -29,6 +29,11 @@ function date_to_string(date){//dateをstringに変換する関数
   return date;
 }
 
+function sql_injection_steps(str){
+  str = str.replace(/;/g, "").replace(/,/g, "").replace(/'/g, "").replace(/`/g, "");
+  return str;
+}
+
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -77,36 +82,39 @@ const connection = mysql.createConnection({//mysqlに接続するために使う
 app.get('/', (req, res) => {//メニュー画面
   console.log(get_C + "/");//いつどのURLに飛んだのかをconsole.logで確認するもの、デバッグ用
 
-  if(now_user ==="ログインなし"){
+  if(now_user === "ログインなし"){
+
     res.redirect("/login");
-  }
-  
-  var all_data={//一番最初にメニューを読み込んだ際に表示されるデータ
-    content:"",
-    users:users_data,
-    user:now_user
-  }
-  var all_data_sql = 'select * from assets where status != "廃棄"'
 
-  if(now_user !== "admin"){
-    all_data_sql += " AND user = '" + now_user + "'"
-  }
+  }else{
 
-  connection.query(all_data_sql , now_user, (err, results, fields) =>{//登録されている資産を持ってくる
-    if(err) throw err;
-
-    all_data.content = results;//SQL文の結果を代入
-
-    for(var i in all_data.content){
-      all_data.content[i].name = String_Cut_20(all_data.content[i].name);//文字がながければカット
-      all_data.content[i].model = String_Cut_20(all_data.content[i].model);
-      all_data.content[i].place = String_Cut_20(all_data.content[i].place);
-
-      all_data.content[i].date = date_to_string(all_data.content[i].date);//date型のままでは厄介なので文字列に変換
+    var all_data={//一番最初にメニューを読み込んだ際に表示されるデータ
+      content:"",
+      users:users_data,
+      user:now_user
     }
-
-    res.render("menu.ejs", all_data);//オブジェクトでejsファイルに渡す、オブジェクト以外渡せない
-  });
+    var all_data_sql = 'select * from assets where status != "廃棄"'
+  
+    if(now_user !== "admin"){
+      all_data_sql += " AND user = '" + now_user + "'"
+    }
+  
+    connection.query(all_data_sql , (err, results, fields) =>{//登録されている資産を持ってくる
+      if(err) throw err;
+  
+      all_data.content = results;//SQL文の結果を代入
+  
+      for(var i in all_data.content){
+        all_data.content[i].name = String_Cut_20(all_data.content[i].name);//文字がながければカット
+        all_data.content[i].model = String_Cut_20(all_data.content[i].model);
+        all_data.content[i].place = String_Cut_20(all_data.content[i].place);
+  
+        all_data.content[i].date = date_to_string(all_data.content[i].date);//date型のままでは厄介なので文字列に変換
+      }
+  
+      res.render("menu.ejs", all_data);//オブジェクトでejsファイルに渡す、オブジェクト以外渡せない
+    });
+  }
 });
 
 app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
@@ -193,17 +201,20 @@ app.post("/", (req, res) => {//絞り込み、変更、申請をした場合
 app.get('/insert', (req, res) => {//新規作成
   console.log(get_C + "/insert");
   if(now_user !== "admin"){
-    res.redirect("/err");
-  }
 
-  data={
-    users:users_data,
-    maxid:""
-  };
-  connection.query("select MAX(id) from assets", (err, results, fields) =>{
-    data.maxid = results[0]["MAX(id)"];//idの最大値を取得、資産コード形成に必要
-    res.render('insert.ejs', data);
-  })
+    res.redirect("/err");
+
+  }else{
+
+    data={
+      users:users_data,
+      maxid:""
+    };
+    connection.query("select MAX(id) from assets", (err, results, fields) =>{
+      data.maxid = results[0]["MAX(id)"];//idの最大値を取得、資産コード形成に必要
+      res.render('insert.ejs', data);
+    })
+  }
 });
 
 app.post('/insert', (req, res) =>{//新規作成から送られてきた情報をspl文で追加
@@ -223,6 +234,9 @@ app.post('/insert', (req, res) =>{//新規作成から送られてきた情報�
         "picture":base64buf,
         "user":req.body.user
     };
+    insert_data.name = sql_injection_steps(insert_data.name);
+    insert_data.model = sql_injection_steps(insert_data.model);
+    insert_data.place = sql_injection_steps(insert_data.place);
     
     connection.query("insert into assets set ?", insert_data, function (error, results, fields) {//追加する
     });
@@ -234,25 +248,36 @@ app.get("/change", (req,res)=>{//変更画面へ推移
 
   if(now_user ==="ログインなし"){
     res.redirect("/err");
+  }else{
+    for(var i in change_data.content){//date型のままでは厄介なので文字列に変換
+      change_data.content[i].date = date_to_string(change_data.content[i].date);
+    }
+  
+    res.render("change.ejs" , change_data);
   }
-
-  for(var i in change_data.content){//date型のままでは厄介なので文字列に変換
-    change_data.content[i].date = date_to_string(change_data.content[i].date);
-  }
-
-  res.render("change.ejs" , change_data);
 });
 
 app.post("/change", (req, res)=>{
   console.log(pos_C + "/change");
   base64_pic=req.body.picture;
-  const base64buf = Buffer.from(base64_pic,'base64');
 
   var change_place = req.body.place;//変更するデータ
   var change_status = req.body.status;
-  connection.query("update assets set place = ?, status = ?, picture = ? where code = ?", [change_place, change_status, base64buf, change_data.content[0].code], function (err, results, fields){
-    if(err) throw err;
-  })
+
+  change_place = sql_injection_steps(change_place);
+  change_status = sql_injection_steps(change_status);
+  
+  if(base64_pic === ""){//ゴリ押し
+    connection.query("update assets set place = ?, status = ? where code = ?", [change_place, change_status, change_data.content[0].code], function (err, results, fields){
+      if(err) throw err;
+    });
+  }else{
+    const base64buf = Buffer.from(base64_pic,'base64');
+
+    connection.query("update assets set place = ?, status = ?, picture = ? where code = ?", [change_place, change_status, base64buf, change_data.content[0].code], function (err, results, fields){
+      if(err) throw err;
+    });
+  }
 
   res.redirect("/");
 });
@@ -261,13 +286,15 @@ app.get('/request', (req, res) =>{
   console.log(get_C + "/request");
 
   if(now_user ==="ログインなし"){
+
     res.redirect("/err");
+
+  }else{
+    request_data={//申請するデータ
+      code:request_code
+    };
+    res.render("request.ejs", request_data);
   }
-  
-  request_data={//申請するデータ
-    code:request_code
-  };
-  res.render("request.ejs", request_data);
 });
 
 app.post("/request", (req, res) =>{
@@ -281,7 +308,9 @@ app.post("/request", (req, res) =>{
     temp_data.price = results[0].price;
     temp_data.user = results[0].user;
     temp_data.type = req.body.request_type;
+    temp_data.type = sql_injection_steps(temp_data.type);
     temp_data.reason = req.body.request_reason;
+    temp_data.reason = sql_injection_steps(temp_data.reason);
     temp_data.processed = 1;
 
     connection.query("insert into requests set ?" ,temp_data, function(err, results, fields){
@@ -295,25 +324,28 @@ app.get("/notice", (req, res) =>{
   console.log(get_C + "/notice");
 
   if(now_user !== "admin"){
+
     res.redirect("/err");
+
+  }else{
+
+    notice_data={
+      content:""
+    };
+    //通知の画面ではデータベースから情報を持ってきて、何の申請が来ているのか確認できる
+    //申請が処理されたかを判断するため、processedという0-処理済み,1-未処理のカラムを使っている
+    connection.query("select * from requests where processed = 1", (err, results, firlds) =>{
+      notice_data.content = results;
+  
+      for(var i in notice_data.content){
+        notice_data.content[i].model = String_Cut_20(notice_data.content[i].model);
+        notice_data.content[i].reason = String_Cut_40(notice_data.content[i].reason);
+        
+      }
+  
+      res.render("notice.ejs", notice_data);
+    });
   }
-
-  notice_data={
-    content:""
-  };
-  //通知の画面ではデータベースから情報を持ってきて、何の申請が来ているのか確認できる
-  //申請が処理されたかを判断するため、processedという0-処理済み,1-未処理のカラムを使っている
-  connection.query("select * from requests where processed = 1", (err, results, firlds) =>{
-    notice_data.content = results;
-
-    for(var i in notice_data.content){
-      notice_data.content[i].model = String_Cut_20(notice_data.content[i].model);
-      notice_data.content[i].reason = String_Cut_40(notice_data.content[i].reason);
-      
-    }
-
-    res.render("notice.ejs", notice_data);
-  });
 });
 
 app.post("/notice", (req, res) =>{
@@ -368,32 +400,34 @@ app.get("/print", (req,res) =>{
   console.log(get_C + "/print");
 
   if(now_user !== "admin"){
+
     res.redirect("/err");
+
+  }else{
+
+    var print_data={
+      content:""
+    };
+    //書類作成するデータのcodeで検索してデータベースから情報を持ってくる
+    connection.query("select * from requests where id = ?", print_id, function(err, results, fields){
+      print_data.content = results;
+  
+      switch(print_data.content[0].type){
+        case "廃棄申請":print_data.content[0].type = "稟議書"
+        break;
+  
+        case "修理申請":print_data.content[0].type = "修理依頼書"
+        break;
+  
+        case "シール再発行申請":print_data.content[0].type = "シール再発行依頼書"
+        break;
+      }
+      res.render("print.ejs", print_data);
+    }); 
   }
-
-  var print_data={
-    content:""
-  };
-  //書類作成するデータのcodeで検索してデータベースから情報を持ってくる
-  connection.query("select * from requests where id = ?", print_id, function(err, results, fields){
-    print_data.content = results;
-
-    switch(print_data.content[0].type){
-      case "廃棄申請":print_data.content[0].type = "稟議書"
-      break;
-
-      case "修理申請":print_data.content[0].type = "修理依頼書"
-      break;
-
-      case "シール再発行申請":print_data.content[0].type = "シール再発行依頼書"
-      break;
-    }
-
-    res.render("print.ejs", print_data);
-  }); 
 });
 
-app.post("/print", (req, res)=>{//書類作成して通知として要らなくなったら、表示しないように　
+app.post("/print", (req, res)=>{
   console.log(pos_C + "/print");
   //消すのではなく、特定のカラムを0にして絞り込みで弾く
   connection.query("update requests set processed = 0 where id = ?", print_id, function (err, results, fields){
@@ -406,22 +440,25 @@ app.get("/inventory_output", (req, res)=>{
   console.log(get_C + "/inventory_output");
 
   if(now_user ==="ログインなし"){
+
     res.redirect("/err");
-  }
 
-  var inventory_data={
-    content:""
-  }
+  }else{
 
-  connection.query("select * from assets", (err, results, fields)=>{
-    inventory_data.content = results;
-
-    for(var i in inventory_data.content){//date型のままでは厄介なので文字列に変換
-      inventory_data.content[i].date = date_to_string(inventory_data.content[i].date);
+    var inventory_data={
+      content:""
     }
-
-    res.render("inventory_output.ejs", inventory_data);
-  });
+  
+    connection.query("select * from assets", (err, results, fields)=>{
+      inventory_data.content = results;
+  
+      for(var i in inventory_data.content){//date型のままでは厄介なので文字列に変換
+        inventory_data.content[i].date = date_to_string(inventory_data.content[i].date);
+      }
+  
+      res.render("inventory_output.ejs", inventory_data);
+    });
+  }
 });
 //inbentory_outputからのpostはない
 
@@ -429,10 +466,13 @@ app.get("/inventory_input", (req, res)=>{
   console.log(get_C + "inventory_input");
 
   if(now_user ==="ログインなし"){
-    res.redirect("/err");
-  }
 
-  res.render("inventory_input.ejs");
+    res.redirect("/err");
+
+  }else{
+
+    res.render("inventory_input.ejs");
+  }
 });
 
 app.post("/inventory_input", (req, res)=>{

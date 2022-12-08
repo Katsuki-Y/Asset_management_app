@@ -41,7 +41,7 @@
         <th class="table_choose">選択</th>
         <th class="table_code">資産コード</th>
         <th class="table_name">資産名</th>
-        <th class="table_date">所得年月日</th>
+        <th class="table_date">取得年月日</th>
         <th class="table_model">型式</th>
         <th class="table_quantity">数量</th>
         <th class="table_price">値段</th>
@@ -97,8 +97,8 @@
         <tr>
           <th>取得年月日</th>
           <td>
-            <input type="date" name="narrow_date_start" value="2020-01-01">〜
-            <input type="date" name="narrow_date_end" id="today">
+            <input type="date" name="narrow_date_start" value="">〜
+            <input type="date" name="narrow_date_end" value="">
           </td>
         </tr>
         <tr>
@@ -131,19 +131,6 @@
   </dialog>
 
     <script>
-      window.onload = function () {//今日の日付を取得する
-
-        var today = new Date();
-
-        today.setDate(today.getDate());
-
-        var year = today.getFullYear();
-        var month = ("0" + (today.getMonth() + 1)).slice(-2);
-        var day = ("0" + today.getDate()).slice(-2);
-
-        document.getElementById("today").value = year + '-' + month + '-' + day;
-      }
-
       //絞り込みの処理
       const narrow_dialog = document.getElementById("narrow_dialog");
       const narrow_button = document.getElementById("narrow_button");

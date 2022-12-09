@@ -86,3 +86,13 @@ option{
 #submit_button:hover{
   background-color: #138da8;
 }
+#picture_button{
+  background-color: #38c9e9;
+  color:black;
+  border-radius:10px;
+  border:none;
+  margin-left: 20px;
+}
+#picture_button:hover{
+  background-color:#138da8;
+}

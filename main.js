@@ -375,7 +375,6 @@ app.post("/notice", (req, res) =>{
     if(narrow_array.length >= 1){
       narrow_text += " where" + narrow_array;
     }
-    console.log(narrow_text);
       
     var narrow_data={
       content:""

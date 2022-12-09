@@ -57,12 +57,19 @@
                 <th>写真</th>
                 <td><input type="file" id="picture_file" accept="image/png" onchange="makebinary(this);">
                     <input type="hidden" name="picture" id="result">
+                    <button id="picture_button" type="button" onclick="view(this);return false;">元の画像</button>
                 </td>
             </tr>
         </table>
         <input id="submit_button" type="submit" value="変更確定">
     </form>
     </div>
+    <dialog id="openimage">
+        <% var picture_base64 = new Buffer(content[0].picture).toString('base64') %>
+      <div id ="dialog_container">
+      <img src="data:image/png;base64,<%= picture_base64 %>" id="image">
+    </div>
+    </dialog>
     <script>
         const pulldown = document.getElementById("status_pulldown");
         const text = pulldown.innerText.split("\n");
@@ -78,6 +85,18 @@
 		    document.getElementById('result').value = fileReader.result.slice(22);//※最初の23文字が邪魔なため、slice(22)で除去する
 	        });
 	    fileReader.readAsDataURL(obj.files[0]);
+        }
+
+        function view(btn){
+          var dialog_id = "openimage";        
+          var image_dialog=document.getElementById(dialog_id);
+          image_dialog.showModal();
+
+        image_dialog.addEventListener('click',(event)=>{
+          if(event.target.closest('#dialog_container') === null){
+            image_dialog.close();
+          }
+        });
         }
     </script>
   </body>

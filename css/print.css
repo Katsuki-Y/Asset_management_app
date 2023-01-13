@@ -40,22 +40,17 @@ body{
     background-color:#138da8;
 }
 
-#empty_space{
-    padding-bottom: 1100px;
-}
-
 #document_title{
     text-align: center;
+    page-break-before: always;
+    font-size: 50px;
+    margin-top: 200px;
 }
 
 #document_body{
     margin-top: 250px;
     margin-left: 80px;
     margin-right: 80px;
-}
-
-#document_title{
-    font-size: 50px;
 }
 
 #reasons{

@@ -50,7 +50,7 @@ const connection = mysql.createConnection({//mysqlに接続するために使う
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'test0707'
+    database: 'main'
   });
 
   connection.connect((err) => {//接続テスト
